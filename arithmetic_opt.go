@@ -4,7 +4,7 @@ import (
     "github.com/ledao/arrgo/internal"
 )
 
-func (a *Arrgo) AddC(b float64) *Arrgo {
+func (a *Arrf) AddC(b float64) *Arrf {
     asm.AddC(b, a.data)
     return a
 }
