@@ -121,3 +121,125 @@ func (a *Arrf) Std(axis ...int) *Arrf {
 func Std(a *Arrf, axis ...int) *Arrf {
 	return a.Std(axis...)
 }
+
+func (a *Arrf) Min(axis ...int) *Arrf {
+	if len(axis) == 0 || len(axis) >= a.Ndims() {
+		minValue := a.data[0]
+		for _, v := range a.data {
+			if minValue > v {
+				minValue = v
+			}
+		}
+		return Full(minValue, 1)
+	}
+
+	sort.IntSlice(axis).Sort()
+	restAxis := make([]int, len(a.shape)-len(axis))
+	aCopy := a.Copy()
+axisR:
+	for i, t := 0, 0; i < len(aCopy.shape); i++ {
+		for _, w := range axis {
+			if i == w {
+				continue axisR
+			}
+		}
+		restAxis[t] = aCopy.shape[i]
+		t++
+	}
+
+	ln := aCopy.strides[0]
+	for k := 0; k < len(axis); k++ {
+		if aCopy.shape[axis[k]] == 1 {
+			continue
+		}
+		axisShape, axisSt, axis1St := aCopy.shape[axis[k]], aCopy.strides[axis[k]], aCopy.strides[axis[k]+1]
+		if axis1St == 1 {
+			Hmin(axisSt, aCopy.data)
+			ln /= axisShape
+			aCopy.data = aCopy.data[:ln]
+			continue
+		}
+
+		t := aCopy.data[0*axis1St : 1*axis1St]
+		for i := 1; i < axisShape; i++ {
+			Vmin(t, aCopy.data[i*axis1St:(i+1)*axis1St])
+		}
+		ln /= axisShape
+		aCopy.data = aCopy.data[:ln]
+	}
+	aCopy.shape = restAxis
+
+	tmp := 1
+	for i := len(restAxis); i > 0; i-- {
+		aCopy.strides[i] = tmp
+		tmp *= restAxis[i-1]
+	}
+	aCopy.strides[0] = tmp
+	aCopy.strides = aCopy.strides[:len(restAxis)+1]
+	return aCopy
+}
+
+func Min(a *Arrf, axis ...int) *Arrf {
+	return a.Min(axis...)
+}
+
+func (a *Arrf) Max(axis ...int) *Arrf {
+	if len(axis) == 0 || len(axis) >= a.Ndims() {
+		maxValue := a.data[0]
+		for _, v := range a.data {
+			if maxValue < v {
+				maxValue = v
+			}
+		}
+		return Full(maxValue, 1)
+	}
+
+	sort.IntSlice(axis).Sort()
+	restAxis := make([]int, len(a.shape)-len(axis))
+	aCopy := a.Copy()
+axisR:
+	for i, t := 0, 0; i < len(aCopy.shape); i++ {
+		for _, w := range axis {
+			if i == w {
+				continue axisR
+			}
+		}
+		restAxis[t] = aCopy.shape[i]
+		t++
+	}
+
+	ln := aCopy.strides[0]
+	for k := 0; k < len(axis); k++ {
+		if aCopy.shape[axis[k]] == 1 {
+			continue
+		}
+		axisShape, axisSt, axis1St := aCopy.shape[axis[k]], aCopy.strides[axis[k]], aCopy.strides[axis[k]+1]
+		if axis1St == 1 {
+			Hmax(axisSt, aCopy.data)
+			ln /= axisShape
+			aCopy.data = aCopy.data[:ln]
+			continue
+		}
+
+		t := aCopy.data[0*axis1St : 1*axis1St]
+		for i := 1; i < axisShape; i++ {
+			Vmax(t, aCopy.data[i*axis1St:(i+1)*axis1St])
+		}
+		ln /= axisShape
+		aCopy.data = aCopy.data[:ln]
+	}
+	aCopy.shape = restAxis
+
+	tmp := 1
+	for i := len(restAxis); i > 0; i-- {
+		aCopy.strides[i] = tmp
+		tmp *= restAxis[i-1]
+	}
+	aCopy.strides[0] = tmp
+	aCopy.strides = aCopy.strides[:len(restAxis)+1]
+	return aCopy
+}
+
+func Max(a *Arrf, axis ...int) *Arrf {
+	return a.Max(axis...)
+}
