@@ -146,3 +146,13 @@ func(ab *Arrb) Any() bool {
     }
     return false
 }
+
+func (a *Arrb) Sum() int {
+    sum := 0
+    for _, v := range a.data {
+        if v {
+            sum++
+        }
+    }
+    return sum
+}
