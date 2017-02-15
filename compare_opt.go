@@ -95,3 +95,25 @@ func NotEqual(a, b *Arrf) *Arrb {
     }
     return t
 }
+
+func (a *Arrf) Sort(axis ...int) *Arrf {
+    ax := -1
+    if len(axis) == 0 {
+        ax = a.Ndims() - 1
+    } else {
+        ax = axis[0]
+    }
+
+    axisShape, axisSt, axis1St := a.shape[ax], a.strides[ax], a.strides[ax + 1]
+    if axis1St == 1 {
+        Hsort(axisSt, a.data)
+    } else {
+        Vsort(axis1St, a.data[0:axisShape * axis1St])
+    }
+
+    return a
+}
+
+func Sort(a *Arrf, axis ...int) *Arrf {
+    return a.Copy().Sort(axis...)
+}

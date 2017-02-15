@@ -2,6 +2,7 @@ package arrgo
 
 import (
 	"math"
+	"sort"
 )
 
 func ReverseIntSlice(slice []int) []int {
@@ -142,6 +143,25 @@ func Vargmin(ln int, a []float64) {
 			}
 		}
 		a[i] = minIndex
+	}
+}
+
+func Hsort(ln int, data []float64) {
+	for i := 0; i*ln < len(data); i++ {
+		sort.Float64s(data[i * ln:i*ln + ln])
+	}
+}
+
+func Vsort(ln int, a []float64) {
+	for i := 0; i < ln; i++ {
+		tmpSlice := make([]float64, 0, len(a)/ln)
+		for j := i; j < len(a); j += ln {
+			tmpSlice = append(tmpSlice, a[j])
+		}
+		sort.Float64s(tmpSlice)
+		for j := i; j < len(a); j += ln {
+			a[j] = tmpSlice[j / ln]
+		}
 	}
 }
 

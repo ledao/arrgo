@@ -15,3 +15,10 @@ func TestArrf_Max(t *testing.T) {
 	fmt.Println(a.Max(1))
 	fmt.Println(a.Max(0, 1))
 }
+
+func TestArrf_Sort(t *testing.T) {
+	a := Array([]float64{2, 3, 1, 5, 4, 1, 4, 5, 6, 4}).Reshape(2, 5)
+	fmt.Println(a)
+	a.Sort(1)
+	fmt.Println(a)
+}
