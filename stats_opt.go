@@ -243,3 +243,121 @@ axisR:
 func Max(a *Arrf, axis ...int) *Arrf {
 	return a.Max(axis...)
 }
+
+func (a *Arrf) ArgMax(axis ...int) *Arrf {
+	if len(axis) == 0 {
+		maxValue := a.data[0]
+		maxIndex := 0.0
+		for i, v := range a.data {
+			if maxValue < v {
+				maxValue = v
+				maxIndex = float64(i)
+			}
+		}
+		return Full(maxIndex, 1)
+	}
+
+	sort.IntSlice(axis).Sort()
+	restAxis := make([]int, len(a.shape) - len(axis))
+	aCopy := a.Copy()
+axisR:
+	for i, t := 0, 0; i < len(aCopy.shape); i++ {
+		for _, w := range axis {
+			if i == w {
+				continue axisR
+			}
+		}
+		restAxis[t] = aCopy.shape[i]
+		t++
+	}
+
+	ln := aCopy.strides[0]
+	var k = 0
+
+	axisShape, axisSt, axis1St := aCopy.shape[axis[k]], aCopy.strides[axis[k]], aCopy.strides[axis[k] + 1]
+	if axis1St == 1 {
+		Hargmax(axisSt, aCopy.data)
+		ln /= axisShape
+		aCopy.data = aCopy.data[:ln]
+	} else {
+		Vargmax(axis1St, aCopy.data[0:axisShape * axis1St])
+
+		ln /= axisShape
+		aCopy.data = aCopy.data[:ln]
+	}
+
+	aCopy.shape = restAxis
+
+	tmp := 1
+	for i := len(restAxis); i > 0; i-- {
+		aCopy.strides[i] = tmp
+		tmp *= restAxis[i - 1]
+	}
+	aCopy.strides[0] = tmp
+	aCopy.strides = aCopy.strides[:len(restAxis) + 1]
+	return aCopy
+}
+
+func ArgMax(a *Arrf, axis ...int) *Arrf {
+	return a.ArgMax(axis...)
+}
+
+func (a *Arrf) ArgMin(axis ...int) *Arrf {
+	if len(axis) == 0 {
+		minValue := a.data[0]
+		minIndex := 0.0
+		for i, v := range a.data {
+			if minValue > v {
+				minValue = v
+				minIndex = float64(i)
+			}
+		}
+		return Full(minIndex, 1)
+	}
+
+	sort.IntSlice(axis).Sort()
+	restAxis := make([]int, len(a.shape) - len(axis))
+	aCopy := a.Copy()
+axisR:
+	for i, t := 0, 0; i < len(aCopy.shape); i++ {
+		for _, w := range axis {
+			if i == w {
+				continue axisR
+			}
+		}
+		restAxis[t] = aCopy.shape[i]
+		t++
+	}
+
+	ln := aCopy.strides[0]
+	var k = 0
+
+	axisShape, axisSt, axis1St := aCopy.shape[axis[k]], aCopy.strides[axis[k]], aCopy.strides[axis[k] + 1]
+	if axis1St == 1 {
+		Hargmin(axisSt, aCopy.data)
+		ln /= axisShape
+		aCopy.data = aCopy.data[:ln]
+	} else {
+		Vargmin(axis1St, aCopy.data[0:axisShape * axis1St])
+
+		ln /= axisShape
+		aCopy.data = aCopy.data[:ln]
+	}
+
+	aCopy.shape = restAxis
+
+	tmp := 1
+	for i := len(restAxis); i > 0; i-- {
+		aCopy.strides[i] = tmp
+		tmp *= restAxis[i - 1]
+	}
+	aCopy.strides[0] = tmp
+	aCopy.strides = aCopy.strides[:len(restAxis) + 1]
+	return aCopy
+}
+
+func ArgMin(a *Arrf, axis ...int) *Arrf {
+	return a.ArgMin(axis...)
+}
+
+

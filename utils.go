@@ -88,3 +88,60 @@ func Vmax(a, b []float64) {
 		}
 	}
 }
+
+func Hargmax(ln int, data []float64) {
+	for i := 0; i*ln < len(data); i += 1 {
+		maxValue := data[i * ln]
+		maxIndex := 0.0
+		for j := i*ln + 1; j < i*ln+ln; j++ {
+			if maxValue < data[j] {
+				maxValue = data[j]
+				maxIndex = float64(j % ln)
+			}
+		}
+		data[i] = maxIndex
+	}
+}
+
+func Vargmax(ln int, a []float64) {
+	for i := 0; i < ln; i++ {
+		maxValue := a[i]
+		maxIndex := 0.0
+		for j := i + ln; j < len(a); j += ln {
+			if maxValue < a[j] {
+				maxValue = a[j]
+				maxIndex = float64(int(j / ln))
+			}
+		}
+		a[i] = maxIndex
+	}
+}
+
+func Hargmin(ln int, data []float64) {
+	for i := 0; i*ln < len(data); i++ {
+		minValue := data[i * ln]
+		minIndex := 0.0
+		for j := i*ln + 1; j < i*ln+ln; j++ {
+			if minValue > data[j] {
+				minValue = data[j]
+				minIndex = float64(j % ln)
+			}
+		}
+		data[i] = minIndex
+	}
+}
+
+func Vargmin(ln int, a []float64) {
+	for i := 0; i < ln; i++ {
+		minValue := a[i]
+		minIndex := 0.0
+		for j := i + ln; j < len(a); j += ln {
+			if minValue > a[j] {
+				minValue = a[j]
+				minIndex = float64(int(j / ln))
+			}
+		}
+		a[i] = minIndex
+	}
+}
+
