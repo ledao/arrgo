@@ -546,3 +546,9 @@ func (a *Arrf) Count(axis ...int) int {
     }
     return cnt
 }
+
+func (a *Arrf) Flatten() *Arrf {
+	ra := make([]float64, len(a.data))
+	copy(ra, a.data)
+	return Array(ra, len(a.data))
+}
