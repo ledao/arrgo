@@ -165,3 +165,11 @@ func Vsort(ln int, a []float64) {
 	}
 }
 
+func ContainsFloat64(s []float64, e float64) bool {
+	for _, v := range s {
+		if v == e {
+			return true
+		}
+	}
+	return false
+}
