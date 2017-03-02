@@ -22,3 +22,9 @@ func TestArrf_Sort(t *testing.T) {
 	a.Sort(1)
 	fmt.Println(a)
 }
+
+func TestVstack(t *testing.T) {
+	a := Arange(10)
+	b := Arange(10).Reshape(1, 10)
+	fmt.Println(Vstack(a, b))
+}
