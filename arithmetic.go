@@ -12,10 +12,12 @@ func (a *Arrf) AddC(b float64) *Arrf {
 }
 
 func(a *Arrf) Add(b *Arrf) *Arrf {
-    ta := a.Copy()
-    if b == nil || ta.Ndims() < b.Ndims() {
+    //如果b为空或者a的轴个数比b的少，则无法计算，返回SHAPE_ERROR
+    if b == nil || a.Ndims() < b.Ndims() {
         panic(SHAPE_ERROR)
     }
+
+    ta := a.Copy()
     if b.shape[len(b.shape) -1] == ta.shape[len(ta.shape)-1] {
         asm.Add(ta.data, b.data)
         return ta
