@@ -1,8 +1,7 @@
-package arraysetops
+package arrgo
 
 import (
-	"github.com/ledao/arrgo"
-	"sort"
+    "sort"
 )
 
 //Find the unique elements of an array.
@@ -42,13 +41,32 @@ import (
 //unique_counts : ndarray, optional
 //The number of times each of the unique values comes up in the
 //original array. Only provided if `return_counts` is True.
-func Unique(a *arrgo.Arrf) *arrgo.Arrf {
-	uniques := make([]float64, 0, a.Count())
-	for _, v := range a.Values() {
-		if !arrgo.ContainsFloat64(uniques, v) {
-			uniques = append(uniques, v)
-		}
-	}
-	sort.Float64s(uniques)
-	return arrgo.Array(uniques)
+func Unique(a *Arrf) *Arrf {
+    uniques := make([]float64, 0, a.Count())
+    for _, v := range a.Values() {
+        if !ContainsFloat64(uniques, v) {
+            uniques = append(uniques, v)
+        }
+    }
+    sort.Float64s(uniques)
+    return Array(uniques)
 }
+
+//Find the intersection of two arrays.
+//    Return the sorted, unique values that are in both of the input arrays.
+//    Parameters
+//    ----------
+//    ar1, ar2 : array_like
+//        Input arrays.
+//    assume_unique : bool
+//        If True, the input arrays are both assumed to be unique, which
+//        can speed up the calculation.  Default is False.
+//    Returns
+//    -------
+//    intersect1d : ndarray
+//        Sorted 1D array of common and unique elements.
+//func Intersect1d(a, b *Arrf) *Arrf {
+//	ar1 := Unique(a)
+//	ar2 := Unique(b)
+//
+//}

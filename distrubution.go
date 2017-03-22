@@ -1,8 +1,6 @@
-
-package random
+package arrgo
 
 import (
-    "github.com/ledao/arrgo"
     "time"
     "math/rand"
 )
@@ -32,8 +30,8 @@ func Seed(seed int64) {
 //Z : matrix of floats
 //A matrix of floating-point samples drawn from the standard normal
 //distribution.
-func Randn(shape ...int) *arrgo.Arrf {
-    a := arrgo.Empty(shape...)
+func Randn(shape ...int) *Arrf {
+    a := Empty(shape...)
     for i := range a.Values() {
         a.Values()[i] = r.NormFloat64()
     }
