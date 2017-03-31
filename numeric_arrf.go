@@ -418,7 +418,7 @@ func (a *Arrf) Values() []float64 {
 //There are `num` equally spaced samples in the closed interval
 //``[start, stop]`` or the half-open interval ``[start, stop)``
 //(depending on whether `endpoint` is True or False).
-func linspace(start, stop, num int) *Arrf {
+func Linspace(start, stop, num int) *Arrf {
     var data = make([]float64, num)
     var startF, stopF = float64(start), float64(stop)
     if startF <= stopF {
