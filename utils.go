@@ -173,3 +173,25 @@ func ContainsFloat64(s []float64, e float64) bool {
 	}
 	return false
 }
+
+func ContainsInt(s []int, e int) bool {
+	for _, v := range s {
+		if v == e {
+			return true
+		}
+	}
+	return false
+}
+
+func SameIntSlice(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	} else {
+		for i := range a {
+			if a[i] != b[i] {
+				return false
+			}
+		}
+		return true
+	}
+}

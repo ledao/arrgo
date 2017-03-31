@@ -1,5 +1,9 @@
 package arrgo
 
+func (a *Arrf) SameShapeTo(b *Arrf) bool {
+	return SameIntSlice(a.shape, b.shape)
+}
+
 func Vstack(arrs ...*Arrf) *Arrf {
 	for i := range arrs {
 		if arrs[i].Ndims() > 2 {
