@@ -83,7 +83,7 @@ func (a *Arrf) Div(b *Arrf) *Arrf {
 
 func (a *Arrf) DotProd(b *Arrf) float64 {
 	switch {
-	case len(a.shape) == 1:
+	case a.Ndims() == 1 && b.Ndims() == 1 && a.Count() == b.Count():
 		return asm.DotProd(a.data, b.data)
 	}
 	panic(SHAPE_ERROR)
