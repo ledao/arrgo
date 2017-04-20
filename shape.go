@@ -104,3 +104,49 @@ func Hstack(arrs ...*Arrf) *Arrf {
 	return Array(data, vlen, hlenSum)
 }
 
+func Concat(axis int, arrs ...*Arrf) *Arrf {
+	if len(arrs) == 0 {
+		return nil
+	}
+	if len(arrs) == 1 {
+		return arrs[0].Copy()
+	}
+
+	var newShape = make([]int, arrs[0].Ndims())
+	for index, firstL := range arrs[0].shape {
+		if index == axis {
+			newShape[index] += firstL
+			for j := 1; j < len(arrs); j++ {
+				newShape[index] += arrs[j].shape[index]
+			}
+		} else {
+			newShape[index] = firstL
+			for j := 1; j < len(arrs); j++ {
+				if firstL != arrs[j].shape[index] {
+					panic(SHAPE_ERROR)
+				}
+			}
+		}
+	}
+
+	var times = 0
+	if axis == 0 {
+		times = 1
+	} else {
+		times = ProductIntSlice(arrs[0].shape[0:axis])
+	}
+
+	var data = make([]float64, ProductIntSlice(newShape))
+
+	var curPos = 0
+	for i := 0; i < times; i++ {
+		for j := 0; j < len(arrs); j++ {
+			var l = ProductIntSlice(arrs[j].shape[axis:])
+			copy(data[curPos:curPos+l], arrs[j].data[i*l:(i+1)*l])
+			curPos += l
+		}
+	}
+
+	return Array(data, newShape...)
+}
+
