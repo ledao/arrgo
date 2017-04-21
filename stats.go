@@ -15,9 +15,13 @@ func (a *Arrf) Sum(axis ...int) *Arrf {
 		return Full(tot, 1)
 	}
 
+	//对axis进行排序，按照从大到小的顺序进行规约
 	sort.IntSlice(axis).Sort()
+	//规约后的数组的形状
 	restAxis := make([]int, len(a.shape)-len(axis))
+	//对a进行复制，所有的操作都作用于临时变量ta中，最后将ta返回
 	ta := a.Copy()
+
 axisR:
 	for i, t := 0, 0; i < len(ta.shape); i++ {
 		for _, w := range axis {
@@ -29,24 +33,33 @@ axisR:
 		t++
 	}
 
+	//数组的元素的个数保存到ln中
 	ln := ta.strides[0]
+	//对每个指定的轴，顺寻进行规约
 	for k := 0; k < len(axis); k++ {
+		//如果轴大小为1，则不需要任何操作
 		if ta.shape[axis[k]] == 1 {
 			continue
 		}
-		axisShape, axisSt, axis1St := ta.shape[axis[k]], ta.strides[axis[k]], ta.strides[axis[k]+1]
-		if axis1St == 1 {
-			asm.Hadd(uint64(axisSt), ta.data)
-			ln /= axisShape
+		//获取当前轴的大小v，当前轴的跨度wd，以及下一个轴的跨度st
+		v, wd, st := ta.shape[axis[k]], ta.strides[axis[k]], ta.strides[axis[k]+1]
+		//如果下一个轴st的跨度为1，则说明当前轴为最后一个轴，只需要每wd个跨度进行一个规约即可
+		if st == 1 {
+			//每wd个数据进行一次规约，结果依次放到开始的位置
+			asm.Hadd(uint64(wd), ta.data)
+			ln /= v
 			ta.data = ta.data[:ln]
 			continue
 		}
-
-		t := ta.data[0*axis1St : 1*axis1St]
-		for i := 1; i < axisShape; i++ {
-			asm.Vadd(t, ta.data[i*axis1St:(i+1)*axis1St])
+		//如果不是最后一个轴，则在该轴上进行规约
+		for w := 0; w < ln; w += wd {
+			t := ta.data[w/wd*st: (w/wd+1)*st]
+			copy(t, ta.data[w:w+st])
+			for i := 1; i*st+1 < wd; i++ {
+				asm.Vadd(t, ta.data[w+(i)*st:w+(i+1)*st])
+			}
 		}
-		ln /= axisShape
+		ln /= v
 		ta.data = ta.data[:ln]
 	}
 	ta.shape = restAxis
@@ -57,7 +70,7 @@ axisR:
 		tmp *= restAxis[i-1]
 	}
 	ta.strides[0] = tmp
-	//ta.data = ta.data[:tmp]
+	ta.data = ta.data[:tmp]
 	ta.strides = ta.strides[:len(restAxis)+1]
 	return ta
 }
@@ -135,48 +148,58 @@ func (a *Arrf) Min(axis ...int) *Arrf {
 
 	sort.IntSlice(axis).Sort()
 	restAxis := make([]int, len(a.shape)-len(axis))
-	aCopy := a.Copy()
+	ta := a.Copy()
 axisR:
-	for i, t := 0, 0; i < len(aCopy.shape); i++ {
+	for i, t := 0, 0; i < len(ta.shape); i++ {
 		for _, w := range axis {
 			if i == w {
 				continue axisR
 			}
 		}
-		restAxis[t] = aCopy.shape[i]
+		restAxis[t] = ta.shape[i]
 		t++
 	}
 
-	ln := aCopy.strides[0]
+	//数组的元素的个数保存到ln中
+	ln := ta.strides[0]
+	//对每个指定的轴，顺寻进行规约
 	for k := 0; k < len(axis); k++ {
-		if aCopy.shape[axis[k]] == 1 {
+		//如果轴大小为1，则不需要任何操作
+		if ta.shape[axis[k]] == 1 {
 			continue
 		}
-		axisShape, axisSt, axis1St := aCopy.shape[axis[k]], aCopy.strides[axis[k]], aCopy.strides[axis[k]+1]
-		if axis1St == 1 {
-			Hmin(axisSt, aCopy.data)
-			ln /= axisShape
-			aCopy.data = aCopy.data[:ln]
+		//获取当前轴的大小v，当前轴的跨度wd，以及下一个轴的跨度st
+		v, wd, st := ta.shape[axis[k]], ta.strides[axis[k]], ta.strides[axis[k]+1]
+		//如果下一个轴st的跨度为1，则说明当前轴为最后一个轴，只需要每wd个跨度进行一个规约即可
+		if st == 1 {
+			//每wd个数据进行一次规约，结果依次放到开始的位置
+			Hmin(wd, ta.data)
+			ln /= v
+			ta.data = ta.data[:ln]
 			continue
 		}
-
-		t := aCopy.data[0*axis1St : 1*axis1St]
-		for i := 1; i < axisShape; i++ {
-			Vmin(t, aCopy.data[i*axis1St:(i+1)*axis1St])
+		//如果不是最后一个轴，则在该轴上进行规约
+		for w := 0; w < ln; w += wd {
+			t := ta.data[w/wd*st: (w/wd+1)*st]
+			copy(t, ta.data[w:w+st])
+			for i := 1; i*st+1 < wd; i++ {
+				Vmin(t, ta.data[w+(i)*st:w+(i+1)*st])
+			}
 		}
-		ln /= axisShape
-		aCopy.data = aCopy.data[:ln]
+		ln /= v
+		ta.data = ta.data[:ln]
 	}
-	aCopy.shape = restAxis
+
+	ta.shape = restAxis
 
 	tmp := 1
 	for i := len(restAxis); i > 0; i-- {
-		aCopy.strides[i] = tmp
+		ta.strides[i] = tmp
 		tmp *= restAxis[i-1]
 	}
-	aCopy.strides[0] = tmp
-	aCopy.strides = aCopy.strides[:len(restAxis)+1]
-	return aCopy
+	ta.strides[0] = tmp
+	ta.strides = ta.strides[:len(restAxis)+1]
+	return ta
 }
 
 func Min(a *Arrf, axis ...int) *Arrf {
@@ -196,54 +219,65 @@ func (a *Arrf) Max(axis ...int) *Arrf {
 
 	sort.IntSlice(axis).Sort()
 	restAxis := make([]int, len(a.shape)-len(axis))
-	aCopy := a.Copy()
+	ta := a.Copy()
 axisR:
-	for i, t := 0, 0; i < len(aCopy.shape); i++ {
+	for i, t := 0, 0; i < len(ta.shape); i++ {
 		for _, w := range axis {
 			if i == w {
 				continue axisR
 			}
 		}
-		restAxis[t] = aCopy.shape[i]
+		restAxis[t] = ta.shape[i]
 		t++
 	}
 
-	ln := aCopy.strides[0]
+	//数组的元素的个数保存到ln中
+	ln := ta.strides[0]
+	//对每个指定的轴，顺寻进行规约
 	for k := 0; k < len(axis); k++ {
-		if aCopy.shape[axis[k]] == 1 {
+		//如果轴大小为1，则不需要任何操作
+		if ta.shape[axis[k]] == 1 {
 			continue
 		}
-		axisShape, axisSt, axis1St := aCopy.shape[axis[k]], aCopy.strides[axis[k]], aCopy.strides[axis[k]+1]
-		if axis1St == 1 {
-			Hmax(axisSt, aCopy.data)
-			ln /= axisShape
-			aCopy.data = aCopy.data[:ln]
+		//获取当前轴的大小v，当前轴的跨度wd，以及下一个轴的跨度st
+		v, wd, st := ta.shape[axis[k]], ta.strides[axis[k]], ta.strides[axis[k]+1]
+		//如果下一个轴st的跨度为1，则说明当前轴为最后一个轴，只需要每wd个跨度进行一个规约即可
+		if st == 1 {
+			//每wd个数据进行一次规约，结果依次放到开始的位置
+			Hmax(wd, ta.data)
+			ln /= v
+			ta.data = ta.data[:ln]
 			continue
 		}
-
-		t := aCopy.data[0*axis1St : 1*axis1St]
-		for i := 1; i < axisShape; i++ {
-			Vmax(t, aCopy.data[i*axis1St:(i+1)*axis1St])
+		//如果不是最后一个轴，则在该轴上进行规约
+		for w := 0; w < ln; w += wd {
+			t := ta.data[w/wd*st: (w/wd+1)*st]
+			copy(t, ta.data[w:w+st])
+			for i := 1; i*st+1 < wd; i++ {
+				Vmax(t, ta.data[w+(i)*st:w+(i+1)*st])
+			}
 		}
-		ln /= axisShape
-		aCopy.data = aCopy.data[:ln]
+		ln /= v
+		ta.data = ta.data[:ln]
 	}
-	aCopy.shape = restAxis
+
+	ta.shape = restAxis
 
 	tmp := 1
 	for i := len(restAxis); i > 0; i-- {
-		aCopy.strides[i] = tmp
+		ta.strides[i] = tmp
 		tmp *= restAxis[i-1]
 	}
-	aCopy.strides[0] = tmp
-	aCopy.strides = aCopy.strides[:len(restAxis)+1]
-	return aCopy
+	ta.strides[0] = tmp
+	ta.strides = ta.strides[:len(restAxis)+1]
+	return ta
 }
 
 func Max(a *Arrf, axis ...int) *Arrf {
 	return a.Max(axis...)
 }
 
+//fixme has bug
 func (a *Arrf) ArgMax(axis ...int) *Arrf {
 	if len(axis) == 0 {
 		maxValue := a.data[0]
@@ -258,7 +292,7 @@ func (a *Arrf) ArgMax(axis ...int) *Arrf {
 	}
 
 	sort.IntSlice(axis).Sort()
-	restAxis := make([]int, len(a.shape) - len(axis))
+	restAxis := make([]int, len(a.shape)-len(axis))
 	aCopy := a.Copy()
 axisR:
 	for i, t := 0, 0; i < len(aCopy.shape); i++ {
@@ -274,13 +308,13 @@ axisR:
 	ln := aCopy.strides[0]
 	var k = 0
 
-	axisShape, axisSt, axis1St := aCopy.shape[axis[k]], aCopy.strides[axis[k]], aCopy.strides[axis[k] + 1]
+	axisShape, axisSt, axis1St := aCopy.shape[axis[k]], aCopy.strides[axis[k]], aCopy.strides[axis[k]+1]
 	if axis1St == 1 {
 		Hargmax(axisSt, aCopy.data)
 		ln /= axisShape
 		aCopy.data = aCopy.data[:ln]
 	} else {
-		Vargmax(axis1St, aCopy.data[0:axisShape * axis1St])
+		Vargmax(axis1St, aCopy.data[0:axisShape*axis1St])
 
 		ln /= axisShape
 		aCopy.data = aCopy.data[:ln]
@@ -291,10 +325,10 @@ axisR:
 	tmp := 1
 	for i := len(restAxis); i > 0; i-- {
 		aCopy.strides[i] = tmp
-		tmp *= restAxis[i - 1]
+		tmp *= restAxis[i-1]
 	}
 	aCopy.strides[0] = tmp
-	aCopy.strides = aCopy.strides[:len(restAxis) + 1]
+	aCopy.strides = aCopy.strides[:len(restAxis)+1]
 	return aCopy
 }
 
@@ -302,6 +336,7 @@ func ArgMax(a *Arrf, axis ...int) *Arrf {
 	return a.ArgMax(axis...)
 }
 
+//fixme has bug
 func (a *Arrf) ArgMin(axis ...int) *Arrf {
 	if len(axis) == 0 {
 		minValue := a.data[0]
@@ -316,7 +351,7 @@ func (a *Arrf) ArgMin(axis ...int) *Arrf {
 	}
 
 	sort.IntSlice(axis).Sort()
-	restAxis := make([]int, len(a.shape) - len(axis))
+	restAxis := make([]int, len(a.shape)-len(axis))
 	aCopy := a.Copy()
 axisR:
 	for i, t := 0, 0; i < len(aCopy.shape); i++ {
@@ -332,13 +367,13 @@ axisR:
 	ln := aCopy.strides[0]
 	var k = 0
 
-	axisShape, axisSt, axis1St := aCopy.shape[axis[k]], aCopy.strides[axis[k]], aCopy.strides[axis[k] + 1]
+	axisShape, axisSt, axis1St := aCopy.shape[axis[k]], aCopy.strides[axis[k]], aCopy.strides[axis[k]+1]
 	if axis1St == 1 {
 		Hargmin(axisSt, aCopy.data)
 		ln /= axisShape
 		aCopy.data = aCopy.data[:ln]
 	} else {
-		Vargmin(axis1St, aCopy.data[0:axisShape * axis1St])
+		Vargmin(axis1St, aCopy.data[0:axisShape*axis1St])
 
 		ln /= axisShape
 		aCopy.data = aCopy.data[:ln]
@@ -349,15 +384,13 @@ axisR:
 	tmp := 1
 	for i := len(restAxis); i > 0; i-- {
 		aCopy.strides[i] = tmp
-		tmp *= restAxis[i - 1]
+		tmp *= restAxis[i-1]
 	}
 	aCopy.strides[0] = tmp
-	aCopy.strides = aCopy.strides[:len(restAxis) + 1]
+	aCopy.strides = aCopy.strides[:len(restAxis)+1]
 	return aCopy
 }
 
 func ArgMin(a *Arrf, axis ...int) *Arrf {
 	return a.ArgMin(axis...)
 }
-
-
