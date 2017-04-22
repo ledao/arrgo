@@ -53,7 +53,7 @@ axisR:
 		}
 		//如果不是最后一个轴，则在该轴上进行规约
 		for w := 0; w < ln; w += wd {
-			t := ta.data[w/wd*st: (w/wd+1)*st]
+			t := ta.data[w/wd*st : (w/wd+1)*st]
 			copy(t, ta.data[w:w+st])
 			for i := 1; i*st+1 < wd; i++ {
 				asm.Vadd(t, ta.data[w+(i)*st:w+(i+1)*st])
@@ -180,7 +180,7 @@ axisR:
 		}
 		//如果不是最后一个轴，则在该轴上进行规约
 		for w := 0; w < ln; w += wd {
-			t := ta.data[w/wd*st: (w/wd+1)*st]
+			t := ta.data[w/wd*st : (w/wd+1)*st]
 			copy(t, ta.data[w:w+st])
 			for i := 1; i*st+1 < wd; i++ {
 				Vmin(t, ta.data[w+(i)*st:w+(i+1)*st])
@@ -251,7 +251,7 @@ axisR:
 		}
 		//如果不是最后一个轴，则在该轴上进行规约
 		for w := 0; w < ln; w += wd {
-			t := ta.data[w/wd*st: (w/wd+1)*st]
+			t := ta.data[w/wd*st : (w/wd+1)*st]
 			copy(t, ta.data[w:w+st])
 			for i := 1; i*st+1 < wd; i++ {
 				Vmax(t, ta.data[w+(i)*st:w+(i+1)*st])

@@ -14,3 +14,21 @@ func TestConcat(t *testing.T) {
 	t.Log(Concat(0, a, b))
 	t.Log(Concat(1, a, b))
 }
+
+func TestAtLeast2D(t *testing.T) {
+	a := Arange(10)
+	AtLeast2D(a)
+	if !SameIntSlice(a.shape, []int{1, 10}) {
+		t.Error("Expected [1, 10], got ", a.shape)
+	}
+
+	a.Reshape(1, 1, 10)
+	AtLeast2D(a)
+	if !SameIntSlice(a.shape, []int{1, 1, 10}) {
+		t.Error("Expected [1, 1, 10], got ", a.shape)
+	}
+
+	if AtLeast2D(nil) != nil {
+		t.Error("Expected nil, got ", AtLeast2D(nil))
+	}
+}

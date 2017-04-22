@@ -41,7 +41,7 @@ func Vstack(arrs ...*Arrf) *Arrf {
 		}
 	}
 
-	data := make([]float64, vlenSum * hlen)
+	data := make([]float64, vlenSum*hlen)
 	var offset = 0
 	for i := range arrs {
 		copy(data[offset:], arrs[i].data)
@@ -96,7 +96,7 @@ func Hstack(arrs ...*Arrf) *Arrf {
 	for i := 0; i < vlen; i++ {
 		var curPos = 0
 		for j := 0; j < len(arrs); j++ {
-			copy(data[curPos+i*hlenSum: curPos+i*hlenSum+hBlockLens[j]], arrs[j].data[i*hBlockLens[j]:(i+1)*hBlockLens[j]])
+			copy(data[curPos+i*hlenSum:curPos+i*hlenSum+hBlockLens[j]], arrs[j].data[i*hBlockLens[j]:(i+1)*hBlockLens[j]])
 			curPos += hBlockLens[j]
 		}
 	}
@@ -150,3 +150,16 @@ func Concat(axis int, arrs ...*Arrf) *Arrf {
 	return Array(data, newShape...)
 }
 
+func AtLeast2D(a *Arrf) *Arrf {
+	if a == nil {
+		return nil
+	} else if a.Ndims() >= 2 {
+		return a
+	} else {
+		newShpae := make([]int, 2)
+		newShpae[0] = 1
+		newShpae[1] = a.shape[0]
+		a.shape = newShpae
+		return a
+	}
+}
