@@ -69,3 +69,28 @@ func TestSum(t *testing.T) {
 		t.Error("expected [4950], got ", arr.Sum())
 	}
 }
+
+
+func TestArgMax(t *testing.T) {
+	arr := Array([]float64{17, 10, 22,  3,  2,  7, 15,  9, 23,  4, 14, 18,  5,  8,  0, 12,  1,
+			       19, 20, 11,  6, 16, 21, 13}, 2,3,4)
+
+	if arr.ArgMax(0).NotEqual(Array([]float64{0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0}, 3,4)).Any() {
+		t.Error(`Expected
+		[[0, 0, 0, 1],
+		[0, 1, 1, 1],
+		[0, 1, 1, 0]], got `, arr.ArgMax(0))
+	}
+
+	if arr.ArgMax(1).NotEqual(Array([]float64{2, 0, 0, 2, 2, 1, 2, 2}, 2,4)).Any() {
+		t.Error(`Expected
+		[[2, 0, 0, 2],
+       		[2, 1, 2, 2]], got `, arr.ArgMax(1))
+	}
+
+	if arr.ArgMax(2).NotEqual(Array([]float64{2, 2,0,3,2,2}, 2,3)).Any() {
+		t.Error(`Expected
+		[[2, 2, 0],
+       		[3, 2, 2]], got `, arr.ArgMax(2))
+	}
+}

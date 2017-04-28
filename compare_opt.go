@@ -2,6 +2,9 @@ package arrgo
 
 
 func (a *Arrf) Greater(b *Arrf) *Arrb {
+    if len(a.data) == 0 || len(b.data) == 0 {
+        panic(EMPTY_ARRAY_ERROR)
+    }
     var t = EmptyB(a.shape...)
     for i, v := range a.data {
         t.data[i] = v > b.data[i]
@@ -10,6 +13,9 @@ func (a *Arrf) Greater(b *Arrf) *Arrb {
 }
 
 func (a *Arrf) GreaterEqual(b *Arrf) *Arrb {
+    if len(a.data) == 0 || len(b.data) == 0 {
+        panic(EMPTY_ARRAY_ERROR)
+    }
     var t = EmptyB(a.shape...)
     for i, v := range a.data {
         t.data[i] = v >= b.data[i]
@@ -18,6 +24,9 @@ func (a *Arrf) GreaterEqual(b *Arrf) *Arrb {
 }
 
 func (a *Arrf) Less(b *Arrf) *Arrb {
+    if len(a.data) == 0 || len(b.data) == 0 {
+        panic(EMPTY_ARRAY_ERROR)
+    }
     var t = EmptyB(a.shape...)
     for i, v := range a.data {
         t.data[i] = v < b.data[i]
@@ -26,6 +35,9 @@ func (a *Arrf) Less(b *Arrf) *Arrb {
 }
 
 func (a *Arrf) LessEqual(b *Arrf) *Arrb {
+    if len(a.data) == 0 || len(b.data) == 0 {
+        panic(EMPTY_ARRAY_ERROR)
+    }
     var t = EmptyB(a.shape...)
     for i, v := range a.data {
         t.data[i] = v <= b.data[i]
@@ -34,6 +46,9 @@ func (a *Arrf) LessEqual(b *Arrf) *Arrb {
 }
 
 func (a *Arrf) Equal(b *Arrf) *Arrb {
+    if len(a.data) == 0 || len(b.data) == 0 {
+        panic(EMPTY_ARRAY_ERROR)
+    }
     var t = EmptyB(a.shape...)
     for i, v := range a.data {
         t.data[i] = v == b.data[i]
@@ -42,6 +57,9 @@ func (a *Arrf) Equal(b *Arrf) *Arrb {
 }
 
 func (a *Arrf) NotEqual(b *Arrf) *Arrb {
+    if len(a.data) == 0 || len(b.data) == 0 {
+        panic(EMPTY_ARRAY_ERROR)
+    }
     var t = EmptyB(a.shape...)
     for i, v := range a.data {
         t.data[i] = v != b.data[i]
@@ -49,51 +67,27 @@ func (a *Arrf) NotEqual(b *Arrf) *Arrb {
     return t
 }
 func  Greater(a, b *Arrf) *Arrb {
-    var t = EmptyB(a.shape...)
-    for i, v := range a.data {
-        t.data[i] = v > b.data[i]
-    }
-    return t
+    return a.Greater(b)
 }
 
 func  GreaterEqual(a,b *Arrf) *Arrb {
-    var t = EmptyB(a.shape...)
-    for i, v := range a.data {
-        t.data[i] = v >= b.data[i]
-    }
-    return t
+    return a.GreaterEqual(b)
 }
 
 func Less(a, b *Arrf) *Arrb {
-    var t = EmptyB(a.shape...)
-    for i, v := range a.data {
-        t.data[i] = v < b.data[i]
-    }
-    return t
+    return a.Less(b)
 }
 
 func  LessEqual(a, b *Arrf) *Arrb {
-    var t = EmptyB(a.shape...)
-    for i, v := range a.data {
-        t.data[i] = v <= b.data[i]
-    }
-    return t
+    return a.LessEqual(b)
 }
 
 func Equal(a, b *Arrf) *Arrb {
-    var t = EmptyB(a.shape...)
-    for i, v := range a.data {
-        t.data[i] = v == b.data[i]
-    }
-    return t
+    return a.Equal(b)
 }
 
 func NotEqual(a, b *Arrf) *Arrb {
-    var t = EmptyB(a.shape...)
-    for i, v := range a.data {
-        t.data[i] = v != b.data[i]
-    }
-    return t
+    return a.NotEqual(b)
 }
 
 func (a *Arrf) Sort(axis ...int) *Arrf {

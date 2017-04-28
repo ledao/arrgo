@@ -90,6 +90,7 @@ func Vmax(a, b []float64) {
 	}
 }
 
+//在data中计算每ln个数据中，最大值的位置，并将结果依次放到data中。
 func Hargmax(ln int, data []float64) {
 	for i := 0; i*ln < len(data); i += 1 {
 		maxValue := data[i * ln]
@@ -103,6 +104,7 @@ func Hargmax(ln int, data []float64) {
 		data[i] = maxIndex
 	}
 }
+
 
 func Vargmax(ln int, a []float64) {
 	for i := 0; i < ln; i++ {

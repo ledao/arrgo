@@ -130,6 +130,9 @@ func (a *Arrb) String() (s string) {
 }
 
 func(ab *Arrb) All() bool {
+    if len(ab.data) == 0 {
+        return false
+    }
     for _, v := range ab.data {
         if v == false {
             return false
@@ -139,6 +142,9 @@ func(ab *Arrb) All() bool {
 }
 
 func(ab *Arrb) Any() bool {
+    if len(ab.data) == 0 {
+        return false
+    }
     for _, v := range ab.data {
         if v == true {
             return true
