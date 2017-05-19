@@ -94,3 +94,27 @@ func TestArgMax(t *testing.T) {
        		[3, 2, 2]], got `, arr.ArgMax(2))
 	}
 }
+
+func TestArgMin(t *testing.T) {
+	arr := Array([]float64{17, 10, 22,  3,  2,  7, 15,  9, 23,  4, 14, 18,  5,  8,  0, 12,  1,
+			       19, 20, 11,  6, 16, 21, 13}, 2,3,4)
+
+	if arr.ArgMin(0).NotEqual(Array([]float64{1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1}, 3,4)).Any() {
+		t.Error(`Expected
+		[[1, 1, 1, 0],
+		[1, 0, 0, 0],
+		[1, 0, 0, 1]], got `, arr.ArgMin(0))
+	}
+
+	if arr.ArgMin(1).NotEqual(Array([]float64{1, 2, 2, 0, 1, 0, 0, 1}, 2,4)).Any() {
+		t.Error(`Expected
+		[[1, 2, 2, 0],
+       		[1, 0, 0, 1]], got `, arr.ArgMin(1))
+	}
+
+	if arr.ArgMin(2).NotEqual(Array([]float64{3, 0, 1, 2, 0, 0}, 2,3)).Any() {
+		t.Error(`Expected
+		[[3, 0, 1],
+       		[2, 0, 0]], got `, arr.ArgMin(2))
+	}
+}

@@ -3,7 +3,7 @@ package arrgo
 import (
 	"sort"
 
-	"arrgo/internal"
+	"github.com/ledao/arrgo/internal"
 )
 
 func (a *Arrf) Sum(axis ...int) *Arrf {
@@ -328,60 +328,52 @@ func ArgMax(a *Arrf, axis int) *Arrf {
 }
 
 //fixme has bug
-func (a *Arrf) ArgMin(axis ...int) *Arrf {
-	if len(axis) == 0 {
-		minValue := a.data[0]
-		minIndex := 0.0
-		for i, v := range a.data {
-			if minValue > v {
-				minValue = v
-				minIndex = float64(i)
-			}
+func (a *Arrf) ArgMin(axis int) *Arrf {
+	restAxis := make([]int, len(a.shape)-1)
+	ta := a.Copy()
+	for i, t := 0, 0; i < len(ta.shape); i++ {
+		if i == axis {
+			continue
 		}
-		return Full(minIndex, 1)
-	}
-
-	sort.IntSlice(axis).Sort()
-	restAxis := make([]int, len(a.shape)-len(axis))
-	aCopy := a.Copy()
-axisR:
-	for i, t := 0, 0; i < len(aCopy.shape); i++ {
-		for _, w := range axis {
-			if i == w {
-				continue axisR
-			}
-		}
-		restAxis[t] = aCopy.shape[i]
+		restAxis[t] = ta.shape[i]
 		t++
 	}
 
-	ln := aCopy.strides[0]
-	var k = 0
+	//数组的元素的个数保存到ln中
+	ln := ta.strides[0]
 
-	axisShape, axisSt, axis1St := aCopy.shape[axis[k]], aCopy.strides[axis[k]], aCopy.strides[axis[k]+1]
-	if axis1St == 1 {
-		Hargmin(axisSt, aCopy.data)
-		ln /= axisShape
-		aCopy.data = aCopy.data[:ln]
+	//获取当前轴的大小v，当前轴的跨度wd，以及下一个轴的跨度st
+	v, wd, st := ta.shape[axis], ta.strides[axis], ta.strides[axis+1]
+	//如果下一个轴st的跨度为1，则说明当前轴为最后一个轴，只需要每wd个跨度进行一个规约即可
+	if st == 1 {
+		//每wd个数据进行一次规约，结果依次放到开始的位置
+		Hargmin(wd, ta.data)
+		ln /= v
+		ta.data = ta.data[:ln]
 	} else {
-		Vargmin(axis1St, aCopy.data[0:axisShape*axis1St])
-
-		ln /= axisShape
-		aCopy.data = aCopy.data[:ln]
+		//如果不是最后一个轴，则在该轴上进行规约
+		td := make([]float64, 0, ln/wd)
+		for w := 0; w < ln; w += wd {
+			Vargmin(st, ta.data[w:w+wd])
+			td = append(td, ta.data[w:w+wd][:st]...)
+		}
+		ln /= v
+		ta.data = td
 	}
 
-	aCopy.shape = restAxis
+
+	ta.shape = restAxis
 
 	tmp := 1
 	for i := len(restAxis); i > 0; i-- {
-		aCopy.strides[i] = tmp
+		ta.strides[i] = tmp
 		tmp *= restAxis[i-1]
 	}
-	aCopy.strides[0] = tmp
-	aCopy.strides = aCopy.strides[:len(restAxis)+1]
-	return aCopy
+	ta.strides[0] = tmp
+	ta.strides = ta.strides[:len(restAxis)+1]
+	return ta
 }
 
-func ArgMin(a *Arrf, axis ...int) *Arrf {
-	return a.ArgMin(axis...)
+func ArgMin(a *Arrf, axis int) *Arrf {
+	return a.ArgMin(axis)
 }

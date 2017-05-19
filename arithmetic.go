@@ -2,7 +2,8 @@ package arrgo
 
 import (
 	"math"
-	"arrgo/internal"
+	//"arrgo/internal"
+	"github.com/ledao/arrgo/internal"
 )
 
 func (a *Arrf) AddC(b float64) *Arrf {
