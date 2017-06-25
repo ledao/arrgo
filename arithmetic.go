@@ -6,12 +6,16 @@ import (
 	"github.com/ledao/arrgo/internal"
 )
 
+//多维数组和标量相加，结果为新的多维数组，不修改原数组。
 func (a *Arrf) AddC(b float64) *Arrf {
 	ta := a.Copy()
 	asm.AddC(b, ta.data)
 	return ta
 }
 
+//两个多维数组相加，结果为新的多维数组，不修改原数组。
+//加法过程中间会发生广播，对矩阵运算有极大帮助。
+//fixme : by ledao 广播机制会进行额外的运算，对于简单的场景最好有判断，避免广播。
 func (a *Arrf) Add(b *Arrf) *Arrf {
 	if a.SameShapeTo(b) {
 		var ta = a.Copy()
@@ -25,12 +29,16 @@ func (a *Arrf) Add(b *Arrf) *Arrf {
 	return ta.Add(tb)
 }
 
+//多维数组和标量相减，结果为新的多维数组，不修改原数组。
 func (a *Arrf) SubC(b float64) *Arrf {
 	ta := a.Copy()
 	asm.SubtrC(b, ta.data)
 	return ta
 }
 
+//两个多维数组相减，结果为新的多维数组，不修改原数组。
+//减法过程中间会发生广播，对矩阵运算有极大帮助。
+//fixme : by ledao 广播机制会进行额外的运算，对于简单的场景最好有判断，避免广播。
 func (a *Arrf) Sub(b *Arrf) *Arrf {
 	if a.SameShapeTo(b) {
 		var ta = a.Copy()
