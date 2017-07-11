@@ -17,6 +17,9 @@ func (a *Arrf) AddC(b float64) *Arrf {
 //加法过程中间会发生广播，对矩阵运算有极大帮助。
 //fixme : by ledao 广播机制会进行额外的运算，对于简单的场景最好有判断，避免广播。
 func (a *Arrf) Add(b *Arrf) *Arrf {
+	if b == nil {
+		panic(SHAPE_ERROR)
+	}
 	if a.SameShapeTo(b) {
 		var ta = a.Copy()
 		asm.Add(ta.data, b.data)
