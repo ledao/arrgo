@@ -111,3 +111,7 @@ func (a *Arrf) Sort(axis ...int) *Arrf {
 func Sort(a *Arrf, axis ...int) *Arrf {
     return a.Copy().Sort(axis...)
 }
+
+func (a *Arrf) Size() int {
+    return ProductIntSlice(a.shape)
+}

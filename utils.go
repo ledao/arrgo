@@ -186,6 +186,9 @@ func ContainsInt(s []int, e int) bool {
 }
 
 func SameIntSlice(a, b []int) bool {
+	if a == nil || b == nil {
+		return false
+	}
 	if len(a) != len(b) {
 		return false
 	} else {
