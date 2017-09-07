@@ -14,6 +14,7 @@ func ReverseIntSlice(slice []int) []int {
 	return s
 }
 
+//计算[]int的所有元素的乘积.
 func ProductIntSlice(slice []int) int {
 	var prod = 1
 	for _, v := range slice {
@@ -93,7 +94,7 @@ func Vmax(a, b []float64) {
 //在data中计算每ln个数据中，最大值的位置，并将结果依次放到data中。
 func Hargmax(ln int, data []float64) {
 	for i := 0; i*ln < len(data); i += 1 {
-		maxValue := data[i * ln]
+		maxValue := data[i*ln]
 		maxIndex := 0.0
 		for j := i*ln + 1; j < i*ln+ln; j++ {
 			if maxValue < data[j] {
@@ -104,7 +105,6 @@ func Hargmax(ln int, data []float64) {
 		data[i] = maxIndex
 	}
 }
-
 
 func Vargmax(ln int, a []float64) {
 	for i := 0; i < ln; i++ {
@@ -122,7 +122,7 @@ func Vargmax(ln int, a []float64) {
 
 func Hargmin(ln int, data []float64) {
 	for i := 0; i*ln < len(data); i++ {
-		minValue := data[i * ln]
+		minValue := data[i*ln]
 		minIndex := 0.0
 		for j := i*ln + 1; j < i*ln+ln; j++ {
 			if minValue > data[j] {
@@ -150,7 +150,7 @@ func Vargmin(ln int, a []float64) {
 
 func Hsort(ln int, data []float64) {
 	for i := 0; i*ln < len(data); i++ {
-		sort.Float64s(data[i * ln:i*ln + ln])
+		sort.Float64s(data[i*ln : i*ln+ln])
 	}
 }
 
@@ -162,7 +162,7 @@ func Vsort(ln int, a []float64) {
 		}
 		sort.Float64s(tmpSlice)
 		for j := i; j < len(a); j += ln {
-			a[j] = tmpSlice[j / ln]
+			a[j] = tmpSlice[j/ln]
 		}
 	}
 }
@@ -185,7 +185,29 @@ func ContainsInt(s []int, e int) bool {
 	return false
 }
 
+//判断两个[]int是否相等。
+//相等是严格的相等，否则为不等。
+//如果有一个为nil则为不相等。
 func SameIntSlice(a, b []int) bool {
+	if a == nil || b == nil {
+		return false
+	}
+	if len(a) != len(b) {
+		return false
+	} else {
+		for i := range a {
+			if a[i] != b[i] {
+				return false
+			}
+		}
+		return true
+	}
+}
+
+//判断两个[]float64是否相等。
+//相等是严格的相等，否则为不等。
+//如果有一个为nil则为不相等。
+func SameFloat64Slice(a, b []float64) bool {
 	if a == nil || b == nil {
 		return false
 	}
