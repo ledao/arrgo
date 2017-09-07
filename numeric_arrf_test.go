@@ -108,9 +108,69 @@ func TestArrayCond4(t *testing.T) {
 	Array(nil, -1, 2, 3)
 }
 
-func TestArray(t *testing.T) {
-	arr := Arange(-10)
-	t.Log("log: ", arr)
+func TestArange(t *testing.T) {
+	a1 := Arange()
+	if !a1.IsEmpty() {
+		t.Error("Expected empty array")
+	}
+
+	a1 = Arange(3)
+	if !a1.Equal(Array([]float64{0,1,2})).All() {
+		t.Error("Expected [0, 1, 2], got ", a1)
+	}
+
+	a1 = Arange(-3)
+	if !a1.Equal(Array([]float64{0, -1, -2})).All() {
+		t.Error("Expected [0, -1, -2], got ", a1)
+	}
+
+	a1 = Arange(1,3)
+	if !a1.Equal(Array([]float64{1,2})).All() {
+		t.Error("Expected [1,2], got ", a1)
+	}
+
+	a1 = Arange(-1, 2)
+	if !a1.Equal(Array([]float64{-1, 0, 1})).All() {
+		t.Error("Expected [-1, 0, 1], got ", a1)
+	}
+
+	a1 = Arange(2, -1)
+	if !a1.Equal(Array([]float64{2, 1, 0})).All() {
+		t.Error("Expected [2, 1, 0], got ", a1)
+	}
+
+	a1 = Arange(1,4, 2)
+	if !a1.Equal(Array([]float64{1, 3})).All() {
+		t.Error("Expected [1, 3], got ", a1)
+	}
+
+	a1 = Arange(4, -1, -2)
+	t.Log(a1)
+	if !a1.Equal(Array([]float64{4, 2, 0})).All() {
+		t.Error("Expected [4, 2, 0], got ", a1)
+	}
+}
+
+func TestArangeIncrementExpection1(t *testing.T) {
+	defer func() {
+		r := recover()
+		if r != PARAMETER_ERROR {
+			t.Errorf("Expected PARAMTER ERROR, got ", r)
+		}
+	}()
+
+	Arange(1,3, -2)
+}
+
+func TestArangeIncrementExpection2(t *testing.T) {
+	defer func() {
+		r := recover()
+		if r != PARAMETER_ERROR {
+			t.Errorf("Expected PARAMTER ERROR, got ", r)
+		}
+	}()
+
+	Arange(3, 1, 1)
 }
 
 func TestArrf_Max(t *testing.T) {

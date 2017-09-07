@@ -1,5 +1,6 @@
 package arrgo
 
+import "fmt"
 
 func (a *Arrf) Greater(b *Arrf) *Arrb {
     if len(a.data) == 0 || len(b.data) == 0 {
@@ -45,9 +46,16 @@ func (a *Arrf) LessEqual(b *Arrf) *Arrb {
     return t
 }
 
+//判断两个Array相对位置的元素是否相同，返回Arrb。
+//如果两个Array任一为空，或者形状不同，则抛出异常。
 func (a *Arrf) Equal(b *Arrf) *Arrb {
     if len(a.data) == 0 || len(b.data) == 0 {
+        fmt.Println("empty array.")
         panic(EMPTY_ARRAY_ERROR)
+    }
+    if !SameIntSlice(a.shape, b.shape) {
+        fmt.Println("shape not same.")
+        panic(SHAPE_ERROR)
     }
     var t = EmptyB(a.shape...)
     for i, v := range a.data {

@@ -3,6 +3,7 @@ package arrgo
 import (
 	"fmt"
 	"strings"
+	"math"
 )
 
 type Arrf struct {
@@ -109,21 +110,22 @@ func Array(data []float64, shape ...int) (a *Arrf) {
 	return
 }
 
-// Arange Creates an array in one of three different ways, depending on input:
-//  Arange(stop):              Array64 from zero to stop
-//  Arange(start, stop):       Array64 from start to stop(excluded), with increment of 1 or -1, depending on inputs
-//  Arange(start, stop, step): Array64 from start to stop(excluded), with increment of step
-//
-// Any inputs beyond three values are ignored
-func Arange(vals ...float64) (a *Arrf) {
-	var start, stop, step float64 = 0, 0, 1
+// 通过指定起始、终止和步进量来创建一维Array。
+// 输入参数： vals，可以有三种情况，详见下面描述。
+// 情况1：Arange(stop):         创建Array [0, 1, ..., stop)，不包括stop。
+// 情况2：Arange(start, stop):  创建Array [start, start +(-)1, ..., stop)，如果start小于start则递增，否则递减。
+// 情况3：Arange(start, stop, step): 创建Array [start, start + step, ..., stop)
+// 输入参数多于三个的都会被忽略。输入序列为“整型数”序列
+func Arange(vals ...int) (a *Arrf) {
+	var start, stop, step int = 0, 0, 1
 
 	switch len(vals) {
 	case 0:
 		return Empty(0)
 	case 1:
 		if vals[0] <= 0 {
-			stop = -1
+			step = -1
+			stop = vals[0] + 1
 		} else {
 			stop = vals[0] - 1
 		}
@@ -137,18 +139,30 @@ func Arange(vals ...float64) (a *Arrf) {
 		start = vals[0]
 	default:
 		if vals[1] < vals[0] {
+			if vals[2] >= 0 {
+				fmt.Println("increment should be negative.")
+				panic(PARAMETER_ERROR)
+			}
 			stop = vals[1] + 1
 		} else {
+			if vals[2] <= 0 {
+				fmt.Println("increment should be positive.")
+				panic(PARAMETER_ERROR)
+			}
 			stop = vals[1] - 1
 		}
 		start, step = vals[0], vals[2]
 	}
 
-	a = Array(nil, int((stop-start)/(step))+1)
+	a = Array(nil, int(int(math.Abs(float64((stop-start)/step))))+1)
 	for i, v := 0, start; i < len(a.data); i, v = i+1, v+step {
-		a.data[i] = v
+		a.data[i] = float64(v)
 	}
 	return
+}
+
+func (a *Arrf) IsEmpty() bool {
+	return len(a.data) == 0
 }
 
 // Internal function to create using the shape of another array
