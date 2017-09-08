@@ -252,6 +252,54 @@ func TestArrf_Sort(t *testing.T) {
 	fmt.Println(a)
 }
 
+func TestArrf_At(t *testing.T) {
+	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
+
+	if arr.At(0, 1) != 2.0 {
+		t.Errorf("Expected 2.0, got ", arr.At(1, 0))
+	}
+
+	if arr.At(0) != 1.0 {
+		t.Errorf("Expected 1.0, got ", arr.At(0))
+	}
+
+	if arr.At(1) != 4.0 {
+		t.Errorf("Expected 4.0, got ", arr.At(1.0))
+	}
+}
+
+func TestArrf_AtLongIndexException(t *testing.T) {
+	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
+
+	defer func() {
+		r := recover()
+		if r != INDEX_ERROR {
+			t.Errorf("Expected INDEX_ERROR, got ", r)
+		}
+	}()
+
+	arr.At(0, 0, 1)
+}
+
+func TestArrf_AtIndexOutofRangeException(t *testing.T) {
+	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
+
+	defer func() {
+		r := recover()
+		if r != INDEX_ERROR {
+			t.Errorf("Expected INDEX_ERROR, got ", r)
+		}
+	}()
+
+	arr.At(2, 0)
+}
+
+func TestDemo(t *testing.T) {
+	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
+	t.Log(arr)
+	t.Log(arr.At(1))
+}
+
 //func TestVstack(t *testing.T) {
 //	a := Arange(10)
 //	b := Arange(10).Reshape(1, 10)

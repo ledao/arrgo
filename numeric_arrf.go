@@ -187,6 +187,7 @@ func Ones(shape ...int) *Arrf {
 	return Full(1, shape...)
 }
 
+//根据输入的多维数组的形状创建全1的多维数组。
 func OnesLike(a *Arrf) *Arrf {
 	return Ones(a.shape...)
 }
@@ -251,10 +252,12 @@ func (a *Arrf) Get(index ...int) float64 {
 func (a *Arrf) valIndex(index ...int) (int, error) {
 	idx := 0
 	if len(index) > len(a.shape) {
+		fmt.Println("index len should not longer than shape.")
 		return -1, INDEX_ERROR
 	}
 	for i, v := range index {
 		if v >= a.shape[i] || v < 0 {
+			fmt.Println("index value out of range.")
 			return -1, INDEX_ERROR
 		}
 		idx += v * a.strides[i+1]
