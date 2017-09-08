@@ -168,7 +168,7 @@ func (a *Arrf) IsEmpty() bool {
 }
 
 //创建shape形状的多维数组，全部填充为fullvalue。
-//如果不指定shape，则返回[fullValue]这个数组。
+//必须指定shape，否则抛出异常。
 func Full(fullValue float64, shape ...int) *Arrf {
 	if len(shape) == 0 {
 		fmt.Println("shape is empty!")
@@ -182,42 +182,14 @@ func Full(fullValue float64, shape ...int) *Arrf {
 	return arr
 }
 
-
+//根据shape创建全为1.0的多维数组。
 func Ones(shape ...int) *Arrf {
 	return Full(1, shape...)
 }
 
-//Return an array of ones with the same shape and type as ta given array.
-//
-//Parameters
-//----------
-//ta : array_like
-//The shape and data-type of `ta` define these same attributes of
-//the returned array.
-//dtype : data-type, optional
-//Overrides the data type of the result.
-//
-//.. versionadded:: 1.6.0
-//order : {'C', 'F', 'A', or 'K'}, optional
-//Overrides the memory layout of the result. 'C' means C-order,
-//'F' means F-order, 'A' means 'F' if `ta` is Fortran contiguous,
-//'C' otherwise. 'K' means match the layout of `ta` as closely
-//as possible.
-//
-//.. versionadded:: 1.6.0
-//subok : bool, optional.
-//If True, then the newly created array will use the sub-class
-//type of 'ta', otherwise it will be ta base-class array. Defaults
-//to True.
-//
-//Returns
-//-------
-//out : ndarray
-//Array of ones with the same shape and type as `ta`.
 func OnesLike(a *Arrf) *Arrf {
-	return Full(1, a.shape...)
+	return Ones(a.shape...)
 }
-
 
 // String Satisfies the Stringer interface for fmt package
 func (a *Arrf) String() (s string) {

@@ -221,6 +221,22 @@ func TestFullException(t *testing.T) {
 	Full(1.0)
 }
 
+func TestOnes(t *testing.T) {
+	arr := Ones(3)
+
+	if !SameIntSlice(arr.shape, []int{3}) {
+		t.Error("Expected [3], got ", arr.shape)
+	}
+
+	if !SameIntSlice(arr.strides, []int{3, 1}) {
+		t.Errorf("Expected [3, 1], got ", arr.strides)
+	}
+
+	if !SameFloat64Slice(arr.data, []float64{1, 1, 1}) {
+		t.Errorf("Expected [1, 1, 1], got ", arr.data)
+	}
+}
+
 func TestArrf_Max(t *testing.T) {
 	a := Arange(6).Reshape(2, 3)
 	fmt.Println(a.Max())
