@@ -192,41 +192,15 @@ func OnesLike(a *Arrf) *Arrf {
 	return Ones(a.shape...)
 }
 
+//根据shape创建全为0的多维数组。
 func Zeros(shape ...int) *Arrf {
 	return Full(0, shape...)
 }
 
-//Return an array of zeros with the same shape and type as ta given array.
-//
-//Parameters
-//----------
-//ta : array_like
-//The shape and data-type of `ta` define these same attributes of
-//the returned array.
-//dtype : data-type, optional
-//Overrides the data type of the result.
-//
-//.. versionadded:: 1.6.0
-//order : {'C', 'F', 'A', or 'K'}, optional
-//Overrides the memory layout of the result. 'C' means C-order,
-//'F' means F-order, 'A' means 'F' if `ta` is Fortran contiguous,
-//'C' otherwise. 'K' means match the layout of `ta` as closely
-//as possible.
-//
-//.. versionadded:: 1.6.0
-//subok : bool, optional.
-//If True, then the newly created array will use the sub-class
-//type of 'ta', otherwise it will be ta base-class array. Defaults
-//to True.
-//
-//Returns
-//-------
-//out : ndarray
-//Array of zeros with the same shape and type as `ta`.
+//根据输入的多维数组的形状创建全0的多维数组。
 func ZerosLike(a *Arrf) *Arrf {
 	return Zeros(a.shape...)
 }
-
 
 // String Satisfies the Stringer interface for fmt package
 func (a *Arrf) String() (s string) {
@@ -334,26 +308,7 @@ func (a *Arrf) Reshape(shape ...int) *Arrf {
 	return a
 }
 
-//Return ta 2-D array with ones on the diagonal and zeros elsewhere.
-//
-//Parameters
-//----------
-//N : int
-//Number of rows in the output.
-//M : int, optional
-//Number of columns in the output. If None, defaults to `N`.
-//k : int, optional
-//Index of the diagonal: 0 (the default) refers to the main diagonal,
-//ta positive value refers to an upper diagonal, and ta negative value
-//to ta lower diagonal.
-//dtype : data-type, optional
-//Data-type of the returned array.
-//
-//Returns
-//-------
-//I : ndarray of shape (N,M)
-//An array where all elements are equal to zero, except for the `k`-th
-//diagonal, whose values are equal to one.
+//创建一个n X n 的2维单位矩阵(数组)。
 func Eye(n int) *Arrf {
 	arr := Zeros(n, n)
 	for i := 0; i < n; i++ {
@@ -362,6 +317,7 @@ func Eye(n int) *Arrf {
 	return arr
 }
 
+//Eye的另一种称呼，详见Eye函数。
 func Identity(n int) *Arrf {
 	return Eye(n)
 }

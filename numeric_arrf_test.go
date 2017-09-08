@@ -1,7 +1,6 @@
 package arrgo
 
 import "testing"
-import "fmt"
 
 func TestArrayCond1(t *testing.T) {
 	arr := Array(nil)
@@ -237,19 +236,20 @@ func TestOnes(t *testing.T) {
 	}
 }
 
-func TestArrf_Max(t *testing.T) {
-	a := Arange(6).Reshape(2, 3)
-	fmt.Println(a.Max())
-	fmt.Println(a.Max(0))
-	fmt.Println(a.Max(1))
-	fmt.Println(a.Max(0, 1))
-}
+func TestZeros(t *testing.T) {
+	arr := Zeros(3)
 
-func TestArrf_Sort(t *testing.T) {
-	a := Array([]float64{2, 3, 1, 5, 4, 1, 4, 5, 6, 4}).Reshape(2, 5)
-	fmt.Println(a)
-	a.Sort(1)
-	fmt.Println(a)
+	if !SameIntSlice(arr.shape, []int{3}) {
+		t.Error("Expected [3], got ", arr.shape)
+	}
+
+	if !SameIntSlice(arr.strides, []int{3, 1}) {
+		t.Errorf("Expected [3, 1], got ", arr.strides)
+	}
+
+	if !SameFloat64Slice(arr.data, []float64{0, 0, 0}) {
+		t.Errorf("Expected [0,0,0], got ", arr.data)
+	}
 }
 
 func TestArrf_At(t *testing.T) {
@@ -359,6 +359,23 @@ func TestArrf_Reshape(t *testing.T) {
 	if !SameIntSlice(arr2.shape, []int{3, 2}) {
 		t.Errorf("Expected [3, 2], got ", arr2.shape)
 	}
+}
+
+func TestEye(t *testing.T) {
+	arr := Eye(2)
+
+	if !arr.Equal(Array([]float64{1, 0, 0, 1}, 2, 2)).All() {
+		t.Errorf("Expected [1, 0, 0, 1], got ", arr)
+	}
+
+	defer func() {
+		r := recover()
+		if r != SHAPE_ERROR {
+			t.Errorf("Expected SHAPE_ERROR, got ", r)
+		}
+	}()
+
+	Eye(0)
 }
 
 func TestDemo(t *testing.T) {
