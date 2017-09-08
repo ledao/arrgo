@@ -252,10 +252,7 @@ func (a *Arrf) String() (s string) {
 //index的长度必须小于等于维度的个数，否则会抛出异常。
 //如果index的个数小于维度个数，则会取后面的第一个值。
 func (a *Arrf) At(index ...int) float64 {
-	idx, err := a.valIndex(index...)
-	if err != nil {
-		panic(err)
-	}
+	idx := a.valIndex(index...)
 	return a.data[idx]
 }
 
@@ -265,20 +262,20 @@ func (a *Arrf) Get(index ...int) float64 {
 }
 
 //At函数的内部实现，返回index指定的元素在切片中的位置，如果有错误，则返回error。
-func (a *Arrf) valIndex(index ...int) (int, error) {
+func (a *Arrf) valIndex(index ...int) int {
 	idx := 0
 	if len(index) > len(a.shape) {
 		fmt.Println("index len should not longer than shape.")
-		return -1, INDEX_ERROR
+		panic(INDEX_ERROR)
 	}
 	for i, v := range index {
 		if v >= a.shape[i] || v < 0 {
 			fmt.Println("index value out of range.")
-			return -1, INDEX_ERROR
+			panic(INDEX_ERROR)
 		}
 		idx += v * a.strides[i+1]
 	}
-	return idx, nil
+	return idx
 }
 
 //获取多维数组元素的个数。
@@ -322,12 +319,18 @@ func Identity(n int) *Arrf {
 	return Eye(n)
 }
 
-func (a *Arrf) Set(val float64, index ...int) *Arrf {
-	idx, _ := a.valIndex(index...)
-	a.data[idx] = val
+//指定位置的元素被新值替换。
+//如果index的超出范围则会抛出异常。
+//返回当前数组的指引，方便后续的连续操作。
+func (a *Arrf) Set(value float64, index ...int) *Arrf {
+	idx := a.valIndex(index...)
+
+	a.data[idx] = value
 	return a
 }
 
+//返回多维数组的内部数组元素。
+//对返回值的操作会影响多维数组，一定谨慎操作。
 func (a *Arrf) Values() []float64 {
 	return a.data
 }

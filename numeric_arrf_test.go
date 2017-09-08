@@ -139,7 +139,6 @@ func TestArange(t *testing.T) {
 	}
 
 	a1 = Arange(4, -1, -2)
-	t.Log(a1)
 	if !a1.Equal(Array([]float64{4, 2, 0})).All() {
 		t.Error("Expected [4, 2, 0], got ", a1)
 	}
@@ -297,45 +296,42 @@ func TestArrf_AtIndexOutofRangeException(t *testing.T) {
 func TestArrf_ValIndex(t *testing.T) {
 	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
 
-	index, err := arr.valIndex(0, 1)
+	index := arr.valIndex(0, 1)
 	if index != 1 {
 		t.Errorf("Expected 1, got ", index)
 	}
-	if err != nil {
-		t.Errorf("Expected nil, got ", err)
-	}
 
-	index, err = arr.valIndex(0)
+	index = arr.valIndex(0)
 	if index != 0 {
 		t.Errorf("Expected 0, got ", index)
 	}
-	if err != nil {
-		t.Errorf("Expected nil, got ", err)
-	}
 
-	index, err = arr.valIndex(1)
+	index = arr.valIndex(1)
 	if index != 3 {
 		t.Errorf("Expected 3, got ", index)
 	}
-	if err != nil {
-		t.Errorf("Expected nil, got ", err)
-	}
+}
 
-	index, err = arr.valIndex(0, 0, 1)
-	if index != -1 {
-		t.Errorf("Expected -1, got ", index)
-	}
-	if err != INDEX_ERROR {
-		t.Errorf("Expected INDEX_ERROR, got ", err)
-	}
+func TestArrf_ValIndexExpection1(t *testing.T) {
+	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
+	defer func() {
+		r := recover()
+		if r != INDEX_ERROR {
+			t.Errorf("Expected INDEX_ERROR, got ", r)
+		}
+	}()
+	arr.valIndex(0, 1, 0)
+}
 
-	index, err = arr.valIndex(2, 0)
-	if index != -1 {
-		t.Errorf("Expected -1, got ", index)
-	}
-	if err != INDEX_ERROR {
-		t.Errorf("Expected INDEX_ERROR, got ", err)
-	}
+func TestArrf_ValIndexExpection2(t *testing.T) {
+	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
+	defer func() {
+		r := recover()
+		if r != INDEX_ERROR {
+			t.Errorf("Expected INDEX_ERROR, got ", r)
+		}
+	}()
+	arr.valIndex(2)
 }
 
 func TestArrf_Length(t *testing.T) {
@@ -376,6 +372,30 @@ func TestEye(t *testing.T) {
 	}()
 
 	Eye(0)
+}
+
+func TestArrf_Set(t *testing.T) {
+	arr := Zeros(3)
+	arr.Set(10, 1)
+
+	if arr.Get(1) != 10 {
+		t.Errorf("Expected 10, got ", arr.Get(10))
+	}
+}
+
+func TestArrf_Values(t *testing.T) {
+	arr := Array([]float64{1, 2, 3})
+
+	values := arr.Values()
+
+	if !SameFloat64Slice(values, []float64{1, 2, 3}) {
+		t.Errorf("Expected [1.0, 2.0, 3.0], got ", values)
+	}
+	values[0] = 100
+
+	if arr.data[0] != 100 {
+		t.Errorf("Expected 100, got ", arr.data[0])
+	}
 }
 
 func TestDemo(t *testing.T) {

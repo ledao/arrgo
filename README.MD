@@ -1,4 +1,4 @@
-最近在提升稳定性，如果您碰巧发现了bug，请一定告知。
+最近在提升可用性，如果您发现了bug，请一定告知。
 
 ### type Arrf
     func Abs(b *Arrf) *Arrf
