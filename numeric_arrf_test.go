@@ -294,6 +294,73 @@ func TestArrf_AtIndexOutofRangeException(t *testing.T) {
 	arr.At(2, 0)
 }
 
+func TestArrf_ValIndex(t *testing.T) {
+	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
+
+	index, err := arr.valIndex(0, 1)
+	if index != 1 {
+		t.Errorf("Expected 1, got ", index)
+	}
+	if err != nil {
+		t.Errorf("Expected nil, got ", err)
+	}
+
+	index, err = arr.valIndex(0)
+	if index != 0 {
+		t.Errorf("Expected 0, got ", index)
+	}
+	if err != nil {
+		t.Errorf("Expected nil, got ", err)
+	}
+
+	index, err = arr.valIndex(1)
+	if index != 3 {
+		t.Errorf("Expected 3, got ", index)
+	}
+	if err != nil {
+		t.Errorf("Expected nil, got ", err)
+	}
+
+	index, err = arr.valIndex(0, 0, 1)
+	if index != -1 {
+		t.Errorf("Expected -1, got ", index)
+	}
+	if err != INDEX_ERROR {
+		t.Errorf("Expected INDEX_ERROR, got ", err)
+	}
+
+	index, err = arr.valIndex(2, 0)
+	if index != -1 {
+		t.Errorf("Expected -1, got ", index)
+	}
+	if err != INDEX_ERROR {
+		t.Errorf("Expected INDEX_ERROR, got ", err)
+	}
+}
+
+func TestArrf_Length(t *testing.T) {
+	arr := Array(nil, 2, 3)
+
+	if arr.Length() != 6 {
+		t.Errorf("Expected 6, got ", arr.Length())
+	}
+}
+
+func TestArrf_Reshape(t *testing.T) {
+	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
+	arr2 := arr.Reshape(3, 2)
+
+	if !SameIntSlice(arr.strides, []int{6, 2, 1}) {
+		t.Errorf("Expected [6,2,1], got ", arr2.strides)
+	}
+	if !SameIntSlice(arr.shape, []int{3, 2}) {
+		t.Errorf("Expected [3, 2], got ", arr.shape)
+	}
+	if !SameIntSlice(arr2.shape, []int{3, 2}) {
+		t.Errorf("Expected [3, 2], got ", arr2.shape)
+	}
+}
+
 func TestDemo(t *testing.T) {
 	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
 	t.Log(arr)

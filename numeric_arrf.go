@@ -192,6 +192,42 @@ func OnesLike(a *Arrf) *Arrf {
 	return Ones(a.shape...)
 }
 
+func Zeros(shape ...int) *Arrf {
+	return Full(0, shape...)
+}
+
+//Return an array of zeros with the same shape and type as ta given array.
+//
+//Parameters
+//----------
+//ta : array_like
+//The shape and data-type of `ta` define these same attributes of
+//the returned array.
+//dtype : data-type, optional
+//Overrides the data type of the result.
+//
+//.. versionadded:: 1.6.0
+//order : {'C', 'F', 'A', or 'K'}, optional
+//Overrides the memory layout of the result. 'C' means C-order,
+//'F' means F-order, 'A' means 'F' if `ta` is Fortran contiguous,
+//'C' otherwise. 'K' means match the layout of `ta` as closely
+//as possible.
+//
+//.. versionadded:: 1.6.0
+//subok : bool, optional.
+//If True, then the newly created array will use the sub-class
+//type of 'ta', otherwise it will be ta base-class array. Defaults
+//to True.
+//
+//Returns
+//-------
+//out : ndarray
+//Array of zeros with the same shape and type as `ta`.
+func ZerosLike(a *Arrf) *Arrf {
+	return Zeros(a.shape...)
+}
+
+
 // String Satisfies the Stringer interface for fmt package
 func (a *Arrf) String() (s string) {
 	switch {
@@ -237,6 +273,10 @@ func (a *Arrf) String() (s string) {
 	return
 }
 
+//获取index指定位置的元素。
+//index必须在shape规定的范围内，否则会抛出异常。
+//index的长度必须小于等于维度的个数，否则会抛出异常。
+//如果index的个数小于维度个数，则会取后面的第一个值。
 func (a *Arrf) At(index ...int) float64 {
 	idx, err := a.valIndex(index...)
 	if err != nil {
@@ -245,10 +285,12 @@ func (a *Arrf) At(index ...int) float64 {
 	return a.data[idx]
 }
 
+//详见At函数。
 func (a *Arrf) Get(index ...int) float64 {
 	return a.At(index...)
 }
 
+//At函数的内部实现，返回index指定的元素在切片中的位置，如果有错误，则返回error。
 func (a *Arrf) valIndex(index ...int) (int, error) {
 	idx := 0
 	if len(index) > len(a.shape) {
@@ -265,73 +307,31 @@ func (a *Arrf) valIndex(index ...int) (int, error) {
 	return idx, nil
 }
 
-// Reshape Changes the size of the array axes.  Values are not changed or moved.
-// This must not change the size of the array.
-// Incorrect dimensions will return ta nil pointer
+//获取多维数组元素的个数。
+func (a *Arrf) Length() int {
+	return len(a.data)
+}
+
+//改变原始多维数组的形状，并返回改变后的多维数组的指引引用。
+//不会创建新的数据副本。
+//如果新的shape的大小和原来多维数组的大小不同，则抛出异常。
 func (a *Arrf) Reshape(shape ...int) *Arrf {
-	if len(shape) == 0 {
-		return a
-	}
-
-	var sz = 1
-	sh := make([]int, len(shape))
-	for _, v := range shape {
-		if v < 0 {
-			panic(SHAPE_ERROR)
-		}
-		sz *= v
-	}
-	copy(sh, shape)
-
-	if sz != len(a.data) {
+	if a.Length() != ProductIntSlice(shape) {
+		fmt.Println("new shape length does not equal to original array length.")
 		panic(SHAPE_ERROR)
 	}
 
-	a.strides = make([]int, len(sh)+1)
-	tmp := 1
-	for i := len(a.strides) - 1; i > 0; i-- {
-		a.strides[i] = tmp
-		tmp *= sh[i-1]
+	internalShape := make([]int, len(shape))
+	copy(internalShape, shape)
+	a.shape = internalShape
+
+	a.strides = make([]int, len(a.shape)+1)
+	a.strides[len(a.shape)] = 1
+	for i := len(a.shape) - 1; i >= 0; i-- {
+		a.strides[i] = a.strides[i+1] * a.shape[i]
 	}
-	a.strides[0] = tmp
-	a.shape = sh
 
 	return a
-}
-
-func Zeros(shape ...int) *Arrf {
-	return Full(0, shape...)
-}
-
-//Return an array of zeros with the same shape and type as ta given array.
-//
-//Parameters
-//----------
-//ta : array_like
-//The shape and data-type of `ta` define these same attributes of
-//the returned array.
-//dtype : data-type, optional
-//Overrides the data type of the result.
-//
-//.. versionadded:: 1.6.0
-//order : {'C', 'F', 'A', or 'K'}, optional
-//Overrides the memory layout of the result. 'C' means C-order,
-//'F' means F-order, 'A' means 'F' if `ta` is Fortran contiguous,
-//'C' otherwise. 'K' means match the layout of `ta` as closely
-//as possible.
-//
-//.. versionadded:: 1.6.0
-//subok : bool, optional.
-//If True, then the newly created array will use the sub-class
-//type of 'ta', otherwise it will be ta base-class array. Defaults
-//to True.
-//
-//Returns
-//-------
-//out : ndarray
-//Array of zeros with the same shape and type as `ta`.
-func ZerosLike(a *Arrf) *Arrf {
-	return Zeros(a.shape...)
 }
 
 //Return ta 2-D array with ones on the diagonal and zeros elsewhere.
