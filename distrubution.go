@@ -31,7 +31,7 @@ func Seed(seed int64) {
 //A matrix of floating-point samples drawn from the standard normal
 //distribution.
 func Randn(shape ...int) *Arrf {
-    a := Empty(shape...)
+	a := Zeros(shape...)
     for i := range a.Values() {
         a.Values()[i] = r.NormFloat64()
     }

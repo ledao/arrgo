@@ -1,7 +1,7 @@
 package arrgo
 
 func Where(cond *Arrb, tv, fv interface{}) *Arrf {
-    t := Empty(cond.shape...)
+	t := Zeros(cond.shape...)
     for i, v := range cond.data {
         if v {
             switch tv.(type) {

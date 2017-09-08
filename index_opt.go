@@ -19,7 +19,7 @@ func (a *Arrf) Index(ranges ...Range) *Arrf {
         shape[i] = totalRanges[i].Stop - totalRanges[i].Start
     }
 
-    b := Empty(shape...)
+	b := Zeros(shape...)
 
     totalCount := 1
     for i := 0; i < ndim; i++ {

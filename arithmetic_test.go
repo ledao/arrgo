@@ -47,17 +47,17 @@ func TestArrf_Add(t *testing.T) {
     }
 }
 
-func TestArrf_Add_NilException(t *testing.T) {
-    var a = Array([]float64{1,2,3,4,5,6}, 2, 3)
-
-    defer func(){
-       var rec = recover()
-        if rec != SHAPE_ERROR {
-            t.Error("Expected SHAPE ERROR, got ", rec)
-        }
-    }()
-    a.Add(nil)
-}
+//func TestArrf_Add_NilException(t *testing.T) {
+//    var a = Array([]float64{1,2,3,4,5,6}, 2, 3)
+//
+//    defer func(){
+//       var rec = recover()
+//        if rec != SHAPE_ERROR {
+//            t.Error("Expected SHAPE ERROR, got ", rec)
+//        }
+//    }()
+//    a.Add(nil)
+//}
 
 func TestArrf_Add_NDimException(t *testing.T) {
     var a = Array([]float64{1,2,3,4,5,6})

@@ -20,30 +20,29 @@ type Arrf struct {
 //情况2：如果不指定shape，而且data不为nil，则创建一个len(data)大小的一维*Arrf。
 //情况3：如果指定shape，而且data不为nil，则根据data大小创建多维数组，如果len(data)不等于shape，或者len(data)不能整除shape，抛出异常。
 //情况4：如果指定shape，而且data为nil，则创建shape大小的全为0.0的多维数组。
-func Array(data []float64, shape ...int) (a *Arrf) {
-	if len(shape) == 0 {
-		switch {
-		case data != nil:
-			internalData := make([]float64, len(data)) //复制data，不影响输入的值。
-			copy(internalData, data)
-			return &Arrf{
-				shape:   []int{len(data)},
-				strides: []int{len(data), 1},
-				data:    internalData,
-			}
-		default:
-			return &Arrf{
-				shape:   []int{0},
-				strides: []int{0, 1},
-				data:    []float64{},
-			}
+func Array(data []float64, shape ...int) *Arrf {
+	if len(shape) == 0 && data == nil {
+		return &Arrf{
+			shape:   []int{0},
+			strides: []int{0, 1},
+			data:    []float64{},
+		}
+	}
+
+	if len(shape) == 0 && data != nil {
+		internalData := make([]float64, len(data)) //复制data，不影响输入的值。
+		copy(internalData, data)
+		return &Arrf{
+			shape:   []int{len(data)},
+			strides: []int{len(data), 1},
+			data:    internalData,
 		}
 	}
 
 	if data == nil {
 		for _, v := range shape {
-			if v < 0 {
-				fmt.Println("shape should not be negative when data is nill")
+			if v <= 0 {
+				fmt.Println("shape should be positive when data is nill")
 				panic(SHAPE_ERROR)
 			}
 		}
@@ -93,35 +92,36 @@ func Array(data []float64, shape ...int) (a *Arrf) {
 		internalShape[negativeIndex] = dataLength / shapeLength
 	}
 
-	a = &Arrf{
+	strides := make([]int, len(internalShape)+1)
+	strides[len(internalShape)] = 1
+	for i := len(internalShape) - 1; i >= 0; i-- {
+		strides[i] = strides[i+1] * internalShape[i]
+	}
+
+	internalData := make([]float64, len(data))
+	copy(internalData, data)
+
+	return &Arrf{
 		shape:   internalShape,
-		strides: make([]int, len(shape)+1),
-		data:    make([]float64, dataLength),
+		strides: strides,
+		data:    internalData,
 	}
-
-	if data != nil {
-		copy(a.data, data)
-	}
-
-	a.strides[len(shape)] = 1
-	for i := len(shape) - 1; i >= 0; i-- {
-		a.strides[i] = a.strides[i+1] * a.shape[i]
-	}
-	return
 }
 
 // 通过指定起始、终止和步进量来创建一维Array。
 // 输入参数： vals，可以有三种情况，详见下面描述。
-// 情况1：Arange(stop):         创建Array [0, 1, ..., stop)，不包括stop。
-// 情况2：Arange(start, stop):  创建Array [start, start +(-)1, ..., stop)，如果start小于start则递增，否则递减。
-// 情况3：Arange(start, stop, step): 创建Array [start, start + step, ..., stop)
-// 输入参数多于三个的都会被忽略。输入序列为“整型数”序列
-func Arange(vals ...int) (a *Arrf) {
+// 情况1：Arange(stop): 以0开始的序列，创建Array [0, 0+(-)1, ..., stop)，不包括stop，stop符号决定升降序。
+// 情况2：Arange(start, stop):创建Array [start, start +(-)1, ..., stop)，如果start小于start则递增，否则递减。
+// 情况3：Arange(start, stop, step):创建Array [start, start + step, ..., stop)，step符号决定升降序。
+// 输入参数多于三个的都会被忽略。
+// 输出序列为“整型数”序列。
+func Arange(vals ...int) *Arrf {
 	var start, stop, step int = 0, 0, 1
 
 	switch len(vals) {
 	case 0:
-		return Empty(0)
+		fmt.Println("range function should have range")
+		panic(PARAMETER_ERROR)
 	case 1:
 		if vals[0] <= 0 {
 			step = -1
@@ -154,57 +154,35 @@ func Arange(vals ...int) (a *Arrf) {
 		start, step = vals[0], vals[2]
 	}
 
-	a = Array(nil, int(int(math.Abs(float64((stop-start)/step))))+1)
+	a := Array(nil, int(math.Abs(float64((stop-start)/step)))+1)
 	for i, v := 0, start; i < len(a.data); i, v = i+1, v+step {
 		a.data[i] = float64(v)
 	}
-	return
+	return a
 }
 
+//判断Arrf是否为空数组。
+//如果内部的data长度为0或者为nil，返回true，否则位false。
 func (a *Arrf) IsEmpty() bool {
-	return len(a.data) == 0
+	return len(a.data) == 0 || a.data == nil
 }
 
-// Internal function to create using the shape of another array
-func Empty(shape ...int) (a *Arrf) {
-	var sz int = 1
-	for _, v := range shape {
-		sz *= v
+//创建shape形状的多维数组，全部填充为fullvalue。
+//如果不指定shape，则返回[fullValue]这个数组。
+func Full(fullValue float64, shape ...int) *Arrf {
+	if len(shape) == 0 {
+		fmt.Println("shape is empty!")
+		panic(SHAPE_ERROR)
 	}
-	shapeCopy := make([]int, len(shape))
-	copy(shapeCopy, shape)
-	a = &Arrf{
-		shape:   shapeCopy,
-		strides: make([]int, len(shape)+1),
-		data:    make([]float64, sz),
+	arr := Array(nil, shape...)
+	for i := range arr.data {
+		arr.data[i] = fullValue
 	}
 
-	a.strides[len(shape)] = 1
-	for i := len(shape) - 1; i >= 0; i-- {
-		a.strides[i] = a.strides[i+1] * a.shape[i]
-	}
-	return
+	return arr
 }
 
-func EmptyLike(a *Arrf) *Arrf {
-	return Empty(a.shape...)
-}
 
-//Return ta new array of given shape and type, filled with ones.
-//Parameters
-//----------
-//shape : int or sequence of ints
-//Shape of the new array, e.g., ``(2, 3)`` or ``2``.
-//dtype : data-type, optional
-//The desired data-type for the array, e.g., `numpy.int8`.  Default is
-//`numpy.float64`.
-//order : {'C', 'F'}, optional
-//Whether to store multidimensional data in C- or Fortran-contiguous
-//(row- or column-wise) order in memory.
-//Returns
-//-------
-//out : ndarray
-//Array of ones with the given shape, dtype, and order.
 func Ones(shape ...int) *Arrf {
 	return Full(1, shape...)
 }
@@ -240,30 +218,6 @@ func OnesLike(a *Arrf) *Arrf {
 	return Full(1, a.shape...)
 }
 
-//Return ta new array of given shape and type, filled with `fill_value`.
-//Parameters
-//----------
-//shape : int or sequence of ints
-//Shape of the new array, e.g., ``(2, 3)`` or ``2``.
-//fill_value : scalar
-//Fill value.
-//dtype : data-type, optional
-//The desired data-type for the array, e.g., `np.int8`.  Default
-//is `float`, but will change to `np.array(fill_value).dtype` in ta
-//future release.
-//order : {'C', 'F'}, optional
-//Whether to store multidimensional data in C- or Fortran-contiguous
-//(row- or column-wise) order in memory.
-//Returns
-//out : ndarray
-//Array of `fill_value` with the given shape, dtype, and order.
-func Full(fullValue float64, shape ...int) *Arrf {
-	arr := Empty(shape...)
-	if fullValue == 0 {
-		return arr
-	}
-	return arr.AddC(fullValue)
-}
 
 // String Satisfies the Stringer interface for fmt package
 func (a *Arrf) String() (s string) {
@@ -290,7 +244,7 @@ func (a *Arrf) String() (s string) {
 		}
 
 		s += strings.Repeat(" ", len(a.shape)-len(t)-1) + t
-		s += fmt.Sprint(a.data[i : i+stride])
+		s += fmt.Sprint(a.data[i: i+stride])
 
 		t = ""
 		for j, v := range a.strides {
@@ -371,7 +325,7 @@ func (a *Arrf) Reshape(shape ...int) *Arrf {
 }
 
 func Zeros(shape ...int) *Arrf {
-	return Empty(shape...)
+	return Full(0, shape...)
 }
 
 //Return an array of zeros with the same shape and type as ta given array.
@@ -402,7 +356,7 @@ func Zeros(shape ...int) *Arrf {
 //out : ndarray
 //Array of zeros with the same shape and type as `ta`.
 func ZerosLike(a *Arrf) *Arrf {
-	return Empty(a.shape...)
+	return Zeros(a.shape...)
 }
 
 //Return ta 2-D array with ones on the diagonal and zeros elsewhere.
@@ -426,7 +380,7 @@ func ZerosLike(a *Arrf) *Arrf {
 //An array where all elements are equal to zero, except for the `k`-th
 //diagonal, whose values are equal to one.
 func Eye(n int) *Arrf {
-	arr := Empty(n, n)
+	arr := Zeros(n, n)
 	for i := 0; i < n; i++ {
 		arr.Set(1, i, i)
 	}
@@ -502,7 +456,7 @@ func Linspace(start, stop, num int) *Arrf {
 }
 
 func (a *Arrf) Copy() *Arrf {
-	b := EmptyLike(a)
+	b := ZerosLike(a)
 	copy(b.data, a.data)
 	return b
 }
@@ -569,7 +523,7 @@ func (a *Arrf) Transpose(axes ...int) *Arrf {
 	var indexsSrc = make([][]int, totalIndexSize)
 	var indexsDst = make([][]int, totalIndexSize)
 
-	var b = Empty(nShape...)
+	var b = Zeros(nShape...)
 	var index = make([]int, n)
 	for i := 0; i < totalIndexSize; i++ {
 		tindexSrc := make([]int, n)

@@ -104,7 +104,7 @@ func (a *Arrf) DotProd(b *Arrf) float64 {
 func (a *Arrf) MatProd(b *Arrf) *Arrf {
 	switch {
 	case a.Ndims() == 2 && b.Ndims() == 2 && a.shape[1] == b.shape[0]:
-		ret := Empty(a.shape[0], b.shape[1])
+		ret := Zeros(a.shape[0], b.shape[1])
 		for i := 0; i < a.shape[0]; i++ {
 			for j := 0; j < a.shape[1]; j++ {
 				ret.Set(a.Index(Range{i, i + 1}).DotProd(b.Index(Range{0, b.shape[0]}, Range{j, j + 1})), i, j)
@@ -365,7 +365,7 @@ func Div(a, b *Arrf) *Arrf {
 }
 
 func Pow(a, b *Arrf) *Arrf {
-	var t = EmptyLike(a)
+	var t = ZerosLike(a)
 	for i, v := range a.data {
 		t.data[i] = math.Pow(v, b.data[i])
 	}

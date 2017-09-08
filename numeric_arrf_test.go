@@ -109,13 +109,8 @@ func TestArrayCond4(t *testing.T) {
 }
 
 func TestArange(t *testing.T) {
-	a1 := Arange()
-	if !a1.IsEmpty() {
-		t.Error("Expected empty array")
-	}
-
-	a1 = Arange(3)
-	if !a1.Equal(Array([]float64{0,1,2})).All() {
+	a1 := Arange(3)
+	if !a1.Equal(Array([]float64{0, 1, 2})).All() {
 		t.Error("Expected [0, 1, 2], got ", a1)
 	}
 
@@ -124,8 +119,8 @@ func TestArange(t *testing.T) {
 		t.Error("Expected [0, -1, -2], got ", a1)
 	}
 
-	a1 = Arange(1,3)
-	if !a1.Equal(Array([]float64{1,2})).All() {
+	a1 = Arange(1, 3)
+	if !a1.Equal(Array([]float64{1, 2})).All() {
 		t.Error("Expected [1,2], got ", a1)
 	}
 
@@ -139,7 +134,7 @@ func TestArange(t *testing.T) {
 		t.Error("Expected [2, 1, 0], got ", a1)
 	}
 
-	a1 = Arange(1,4, 2)
+	a1 = Arange(1, 4, 2)
 	if !a1.Equal(Array([]float64{1, 3})).All() {
 		t.Error("Expected [1, 3], got ", a1)
 	}
@@ -159,7 +154,7 @@ func TestArangeIncrementExpection1(t *testing.T) {
 		}
 	}()
 
-	Arange(1,3, -2)
+	Arange(1, 3, -2)
 }
 
 func TestArangeIncrementExpection2(t *testing.T) {
@@ -171,6 +166,59 @@ func TestArangeIncrementExpection2(t *testing.T) {
 	}()
 
 	Arange(3, 1, 1)
+}
+
+func TestArangeNullParameterException(t *testing.T) {
+	defer func() {
+		r := recover()
+		if r != PARAMETER_ERROR {
+			t.Errorf("Expected PARAMETER ERROR, got ", r)
+		}
+	}()
+
+	Arange()
+}
+
+func TestArrf_IsEmpty(t *testing.T) {
+	empty := Array(nil)
+
+	if empty.IsEmpty() != true {
+		t.Errorf("Expected empty arra")
+	}
+
+	empty.data = make([]float64, 0)
+
+	if empty.IsEmpty() != true {
+		t.Errorf("Expected empty arra")
+	}
+}
+
+func TestFull(t *testing.T) {
+	arr := Full(1.0, 3)
+
+	if !SameIntSlice(arr.shape, []int{3}) {
+		t.Errorf("Expected [3], got ", arr.shape)
+	}
+
+	if !SameIntSlice(arr.strides, []int{3, 1}) {
+		t.Errorf("Expected [3, 1], got ", arr.strides)
+	}
+
+	if !SameFloat64Slice(arr.data, []float64{1.0, 1.0, 1.0}) {
+		t.Errorf("Expected [1.0, 1.0, 1.0], got ", arr.data)
+	}
+}
+
+func TestFullException(t *testing.T) {
+	defer func() {
+		r := recover()
+
+		if r != SHAPE_ERROR {
+			t.Errorf("Expected SHAPE_ERROR, got ", r)
+		}
+	}()
+
+	Full(1.0)
 }
 
 func TestArrf_Max(t *testing.T) {
