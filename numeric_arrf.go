@@ -167,16 +167,16 @@ func (a *Arrf) IsEmpty() bool {
 	return len(a.data) == 0 || a.data == nil
 }
 
-//创建shape形状的多维数组，全部填充为fullvalue。
+//创建shape形状的多维数组，全部填充为fillvalue。
 //必须指定shape，否则抛出异常。
-func Full(fullValue float64, shape ...int) *Arrf {
+func Fill(fillValue float64, shape ...int) *Arrf {
 	if len(shape) == 0 {
 		fmt.Println("shape is empty!")
 		panic(SHAPE_ERROR)
 	}
 	arr := Array(nil, shape...)
 	for i := range arr.data {
-		arr.data[i] = fullValue
+		arr.data[i] = fillValue
 	}
 
 	return arr
@@ -184,7 +184,7 @@ func Full(fullValue float64, shape ...int) *Arrf {
 
 //根据shape创建全为1.0的多维数组。
 func Ones(shape ...int) *Arrf {
-	return Full(1, shape...)
+	return Fill(1, shape...)
 }
 
 //根据输入的多维数组的形状创建全1的多维数组。
@@ -194,7 +194,7 @@ func OnesLike(a *Arrf) *Arrf {
 
 //根据shape创建全为0的多维数组。
 func Zeros(shape ...int) *Arrf {
-	return Full(0, shape...)
+	return Fill(0, shape...)
 }
 
 //根据输入的多维数组的形状创建全0的多维数组。

@@ -12,7 +12,7 @@ func (a *Arrf) Sum(axis ...int) *Arrf {
 		for _, v := range a.data {
 			tot += v
 		}
-		return Full(tot, 1)
+		return Fill(tot, 1)
 	}
 
 	//对axis进行排序，按照从大到小的顺序进行规约
@@ -85,7 +85,7 @@ func (a *Arrf) Mean(axis ...int) *Arrf {
 		for _, v := range a.data {
 			tot += v
 		}
-		return Full(tot/float64(a.strides[0]), 1)
+		return Fill(tot/float64(a.strides[0]), 1)
 	}
 
 	sort.IntSlice(axis).Sort()
@@ -143,7 +143,7 @@ func (a *Arrf) Min(axis ...int) *Arrf {
 				minValue = v
 			}
 		}
-		return Full(minValue, 1)
+		return Fill(minValue, 1)
 	}
 
 	sort.IntSlice(axis).Sort()
@@ -214,7 +214,7 @@ func (a *Arrf) Max(axis ...int) *Arrf {
 				maxValue = v
 			}
 		}
-		return Full(maxValue, 1)
+		return Fill(maxValue, 1)
 	}
 
 	sort.IntSlice(axis).Sort()

@@ -191,8 +191,8 @@ func TestArrf_IsEmpty(t *testing.T) {
 	}
 }
 
-func TestFull(t *testing.T) {
-	arr := Full(1.0, 3)
+func TestFill(t *testing.T) {
+	arr := Fill(1.0, 3)
 
 	if !SameIntSlice(arr.shape, []int{3}) {
 		t.Errorf("Expected [3], got ", arr.shape)
@@ -207,7 +207,7 @@ func TestFull(t *testing.T) {
 	}
 }
 
-func TestFullException(t *testing.T) {
+func TestFillException(t *testing.T) {
 	defer func() {
 		r := recover()
 
@@ -216,7 +216,7 @@ func TestFullException(t *testing.T) {
 		}
 	}()
 
-	Full(1.0)
+	Fill(1.0)
 }
 
 func TestOnes(t *testing.T) {

@@ -42,7 +42,7 @@ func TestArrf_Add(t *testing.T) {
     var a = Array([]float64{1,2,3,4,5,6}, 2, 3)
     var b = Array([]float64{6,5,4,3,2,1}, 2, 3)
     var c = a.Add(b)
-	if !c.Equal(Full(7, 2, 3)).AllTrues() {
+	if !c.Equal(Fill(7, 2, 3)).AllTrues() {
         t.Error("Expected [[7,7,7],[7,7,7]], got ", c)
     }
 }

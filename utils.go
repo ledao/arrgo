@@ -222,3 +222,22 @@ func SameFloat64Slice(a, b []float64) bool {
 		return true
 	}
 }
+
+//判断两个[]bool是否相等。
+//相等是严格的相等，否则为不等。
+//如果有一个为nil则为不相等。
+func SameBoolSlice(a, b []bool) bool {
+	if a == nil || b == nil {
+		return false
+	}
+	if len(a) != len(b) {
+		return false
+	} else {
+		for i := range a {
+			if a[i] != b[i] {
+				return false
+			}
+		}
+		return true
+	}
+}
