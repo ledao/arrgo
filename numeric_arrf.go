@@ -283,28 +283,6 @@ func (a *Arrf) Length() int {
 	return len(a.data)
 }
 
-//改变原始多维数组的形状，并返回改变后的多维数组的指引引用。
-//不会创建新的数据副本。
-//如果新的shape的大小和原来多维数组的大小不同，则抛出异常。
-func (a *Arrf) Reshape(shape ...int) *Arrf {
-	if a.Length() != ProductIntSlice(shape) {
-		fmt.Println("new shape length does not equal to original array length.")
-		panic(SHAPE_ERROR)
-	}
-
-	internalShape := make([]int, len(shape))
-	copy(internalShape, shape)
-	a.shape = internalShape
-
-	a.strides = make([]int, len(a.shape)+1)
-	a.strides[len(a.shape)] = 1
-	for i := len(a.shape) - 1; i >= 0; i-- {
-		a.strides[i] = a.strides[i+1] * a.shape[i]
-	}
-
-	return a
-}
-
 //创建一个n X n 的2维单位矩阵(数组)。
 func Eye(n int) *Arrf {
 	arr := Zeros(n, n)
@@ -335,45 +313,10 @@ func (a *Arrf) Values() []float64 {
 	return a.data
 }
 
-//Return evenly spaced numbers over ta specified interval.
-//
-//Returns `num` evenly spaced samples, calculated over the
-//interval [`start`, `stop`].
-//
-//The endpoint of the interval can optionally be excluded.
-//
-//Parameters
-//----------
-//start : scalar
-//The starting value of the sequence.
-//stop : scalar
-//The end value of the sequence, unless `endpoint` is set to False.
-//In that case, the sequence consists of all but the last of ``num + 1``
-//evenly spaced samples, so that `stop` is excluded.  Note that the step
-//size changes when `endpoint` is False.
-//num : int, optional
-//Number of samples to generate. Default is 50. Must be non-negative.
-//endpoint : bool, optional
-//If True, `stop` is the last sample. Otherwise, it is not included.
-//Default is True.
-//retstep : bool, optional
-//If True, return (`samples`, `step`), where `step` is the spacing
-//between samples.
-//dtype : dtype, optional
-//The type of the output array.  If `dtype` is not given, infer the data
-//type from the other input arguments.
-//
-//.. versionadded:: 1.9.0
-//
-//Returns
-//-------
-//samples : ndarray
-//There are `num` equally spaced samples in the closed interval
-//``[start, stop]`` or the half-open interval ``[start, stop)``
-//(depending on whether `endpoint` is True or False).
-func Linspace(start, stop, num int) *Arrf {
+//根据[start, stop]指定的区间，创建包含num个元素的一维数组。
+func Linspace(start, stop float64, num int) *Arrf {
 	var data = make([]float64, num)
-	var startF, stopF = float64(start), float64(stop)
+	var startF, stopF = start, stop
 	if startF <= stopF {
 		var step = (stopF - startF) / (float64(num - 1.0))
 		for i := range data {
@@ -389,42 +332,25 @@ func Linspace(start, stop, num int) *Arrf {
 	}
 }
 
+//复制一个形状一样，但是数据被深度复制的多维数组。
 func (a *Arrf) Copy() *Arrf {
 	b := ZerosLike(a)
 	copy(b.data, a.data)
 	return b
 }
 
+//返回多维数组的维度数目。
 func (a *Arrf) Ndims() int {
 	return len(a.shape)
 }
 
 //Returns ta view of the array with axes transposed.
-//
-//For ta 1-D array, this has no effect. (To change between column and
-//row vectors, first cast the 1-D array into ta matrix object.)
-//For ta 2-D array, this is the usual matrix transpose.
-//For an n-D array, if axes are given, their order indicates how the
-//axes are permuted (see Examples). If axes are not provided and
-//``ta.shape = (i[0], i[1], ... i[n-2], i[n-1])``, then
-//``ta.transpose().shape = (i[n-1], i[n-2], ... i[1], i[0])``.
-//
-//Parameters
-//----------
-//axes : None, tuple of ints, or `n` ints
-//
-//* None or no argument: reverses the order of the axes.
-//
-//* tuple of ints: `i` in the `j`-th place in the tuple means `ta`'s
-//`i`-th axis becomes `ta.transpose()`'s `j`-th axis.
-//
-//* `n` ints: same as an n-tuple of the same ints (this form is
-//intended simply as ta "convenience" alternative to the tuple form)
-//
-//Returns
-//-------
-//out : ndarray
-//View of `ta`, with axes suitably permuted.
+//根据指定的轴顺序，生成一个新的调整后的多维数组。
+//如果是1维数组，则没有任何变化。
+//如果是2维数组，则行列交换。
+//如果是n维数组，则根据指定的顺序调整，生成新的多维数组。
+//输入参数1：如果不指定输入参数，则轴顺序全部反序；如果指定参数则个数必须和轴个数相同，否则抛出异常。
+//fixme 这里的实现效率不高，后面有时间需要提升一下。
 func (a *Arrf) Transpose(axes ...int) *Arrf {
 	var n = a.Ndims()
 	var permutation []int
@@ -433,6 +359,10 @@ func (a *Arrf) Transpose(axes ...int) *Arrf {
 	switch len(axes) {
 	case 0:
 		permutation = make([]int, n)
+		nShape = make([]int, n)
+		for i := range permutation {
+			permutation[i] = n - i
+		}
 		for i := 0; i < n; i++ {
 			permutation[i] = n - 1 - i
 			nShape[i] = a.shape[permutation[i]]
@@ -446,6 +376,7 @@ func (a *Arrf) Transpose(axes ...int) *Arrf {
 		}
 
 	default:
+		fmt.Println("axis number wrong.")
 		panic(DIMENTION_ERROR)
 	}
 
@@ -485,22 +416,4 @@ func (a *Arrf) Transpose(axes ...int) *Arrf {
 		b.Set(a.Get(indexsSrc[i]...), indexsDst[i]...)
 	}
 	return b
-}
-
-func (a *Arrf) Count(axis ...int) int {
-	if len(axis) == 0 {
-		return a.strides[0]
-	}
-
-	var cnt = 1
-	for _, w := range axis {
-		cnt *= a.shape[w]
-	}
-	return cnt
-}
-
-func (a *Arrf) Flatten() *Arrf {
-	ra := make([]float64, len(a.data))
-	copy(ra, a.data)
-	return Array(ra, len(a.data))
 }

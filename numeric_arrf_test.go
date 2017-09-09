@@ -109,37 +109,37 @@ func TestArrayCond4(t *testing.T) {
 
 func TestArange(t *testing.T) {
 	a1 := Arange(3)
-	if !a1.Equal(Array([]float64{0, 1, 2})).All() {
+	if !a1.Equal(Array([]float64{0, 1, 2})).AllTrues() {
 		t.Error("Expected [0, 1, 2], got ", a1)
 	}
 
 	a1 = Arange(-3)
-	if !a1.Equal(Array([]float64{0, -1, -2})).All() {
+	if !a1.Equal(Array([]float64{0, -1, -2})).AllTrues() {
 		t.Error("Expected [0, -1, -2], got ", a1)
 	}
 
 	a1 = Arange(1, 3)
-	if !a1.Equal(Array([]float64{1, 2})).All() {
+	if !a1.Equal(Array([]float64{1, 2})).AllTrues() {
 		t.Error("Expected [1,2], got ", a1)
 	}
 
 	a1 = Arange(-1, 2)
-	if !a1.Equal(Array([]float64{-1, 0, 1})).All() {
+	if !a1.Equal(Array([]float64{-1, 0, 1})).AllTrues() {
 		t.Error("Expected [-1, 0, 1], got ", a1)
 	}
 
 	a1 = Arange(2, -1)
-	if !a1.Equal(Array([]float64{2, 1, 0})).All() {
+	if !a1.Equal(Array([]float64{2, 1, 0})).AllTrues() {
 		t.Error("Expected [2, 1, 0], got ", a1)
 	}
 
 	a1 = Arange(1, 4, 2)
-	if !a1.Equal(Array([]float64{1, 3})).All() {
+	if !a1.Equal(Array([]float64{1, 3})).AllTrues() {
 		t.Error("Expected [1, 3], got ", a1)
 	}
 
 	a1 = Arange(4, -1, -2)
-	if !a1.Equal(Array([]float64{4, 2, 0})).All() {
+	if !a1.Equal(Array([]float64{4, 2, 0})).AllTrues() {
 		t.Error("Expected [4, 2, 0], got ", a1)
 	}
 }
@@ -342,25 +342,10 @@ func TestArrf_Length(t *testing.T) {
 	}
 }
 
-func TestArrf_Reshape(t *testing.T) {
-	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
-	arr2 := arr.Reshape(3, 2)
-
-	if !SameIntSlice(arr.strides, []int{6, 2, 1}) {
-		t.Errorf("Expected [6,2,1], got ", arr2.strides)
-	}
-	if !SameIntSlice(arr.shape, []int{3, 2}) {
-		t.Errorf("Expected [3, 2], got ", arr.shape)
-	}
-	if !SameIntSlice(arr2.shape, []int{3, 2}) {
-		t.Errorf("Expected [3, 2], got ", arr2.shape)
-	}
-}
-
 func TestEye(t *testing.T) {
 	arr := Eye(2)
 
-	if !arr.Equal(Array([]float64{1, 0, 0, 1}, 2, 2)).All() {
+	if !arr.Equal(Array([]float64{1, 0, 0, 1}, 2, 2)).AllTrues() {
 		t.Errorf("Expected [1, 0, 0, 1], got ", arr)
 	}
 
@@ -398,14 +383,91 @@ func TestArrf_Values(t *testing.T) {
 	}
 }
 
-func TestDemo(t *testing.T) {
-	arr := Array([]float64{1, 2, 3, 4, 5, 6}, 2, 3)
-	t.Log(arr)
-	t.Log(arr.At(1))
+func TestLinspace(t *testing.T) {
+	arr := Linspace(1, 2, 5)
+
+	if !arr.Equal(Array([]float64{1, 1.25, 1.5, 1.75, 2})).AllTrues() {
+		t.Errorf("Expected [1, 1.25, 1.5, 1.75, 2], got ", arr)
+	}
+
+	arr = Linspace(2, 1, 5)
+
+	if !arr.Equal(Array([]float64{2, 1.75, 1.5, 1.25, 1})).AllTrues() {
+		t.Errorf("Expected [2, 1.75, 1.5, 1.25, 1], got ", arr)
+	}
+
+	arr = Linspace(-2, -1, 5)
+
+	if !arr.Equal(Array([]float64{-2, -1.75, -1.5, -1.25, -1})).AllTrues() {
+		t.Errorf("Expected [-2, -1.75, -1.5, -1.25, -1], got ", arr)
+	}
+
+	arr = Linspace(-1, -2, 5)
+
+	if !arr.Equal(Array([]float64{-1, -1.25, -1.5, -1.75, -2})).AllTrues() {
+		t.Errorf("Expected [-1, -1.25, -1.5, -1.75, -2], got ", arr)
+	}
+
+	arr = Linspace(-1, 2, 5)
+
+	if !arr.Equal(Array([]float64{-1, -0.25, 0.5, 1.25, 2})).AllTrues() {
+		t.Errorf("Expected [-1, -0.25, 0.5, 1.25, 2], got ", arr)
+	}
 }
 
-//func TestVstack(t *testing.T) {
-//	a := Arange(10)
-//	b := Arange(10).Reshape(1, 10)
-//	fmt.Println(Vstack(a, b))
-//}
+func TestArrf_Copy(t *testing.T) {
+	arr := Ones(2)
+	arrCopy := arr.Copy()
+	arr.Set(10, 0)
+
+	if !arrCopy.Equal(Array([]float64{1, 1})).AllTrues() {
+		t.Errorf("Expected [1, 1], got ", arrCopy)
+	}
+}
+
+func TestArrf_Ndims(t *testing.T) {
+	arr := Arange(10)
+	if arr.Ndims() != 1 {
+		t.Errorf("Expected 1, got ", arr.Ndims())
+	}
+
+	arr.Reshape(2, 5)
+	if arr.Ndims() != 2 {
+		t.Errorf("Expected 2, got ", arr.Ndims())
+	}
+
+	arr.Reshape(2, 5, 1)
+	if arr.Ndims() != 3 {
+		t.Errorf("Expected 3, got ", arr.Ndims())
+	}
+}
+
+func TestArrf_Transpose(t *testing.T) {
+	arr := Arange(4).Reshape(2, 2)
+
+	if !arr.Equal(Array([]float64{0, 1, 2, 3}, 2, 2)).AllTrues() {
+		t.Errorf("Expected [[0,1],[2,3]], got ", arr)
+	}
+
+	arrTransposed := arr.Transpose()
+	if !arrTransposed.Equal(Array([]float64{0, 2, 1, 3}, 2, 2)).AllTrues() {
+		t.Errorf("Expected [[0,2,], [1,3]], got ", arrTransposed)
+	}
+
+	arrTransposed = arr.Transpose(1, 0)
+	if !arrTransposed.Equal(Array([]float64{0, 2, 1, 3}, 2, 2)).AllTrues() {
+		t.Errorf("Expected [[0,2,], [1,3]], got ", arrTransposed)
+	}
+}
+
+func TestArrf_TransposeException(t *testing.T) {
+	arr := Arange(4)
+
+	defer func() {
+		r := recover()
+		if r != DIMENTION_ERROR {
+			t.Errorf("Expected DIMENTION_ERROR, got ", r)
+		}
+	}()
+	arr.Transpose(0, 1)
+}

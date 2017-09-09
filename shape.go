@@ -1,5 +1,29 @@
 package arrgo
 
+import "fmt"
+
+//改变原始多维数组的形状，并返回改变后的多维数组的指引引用。
+//不会创建新的数据副本。
+//如果新的shape的大小和原来多维数组的大小不同，则抛出异常。
+func (a *Arrf) Reshape(shape ...int) *Arrf {
+	if a.Length() != ProductIntSlice(shape) {
+		fmt.Println("new shape length does not equal to original array length.")
+		panic(SHAPE_ERROR)
+	}
+
+	internalShape := make([]int, len(shape))
+	copy(internalShape, shape)
+	a.shape = internalShape
+
+	a.strides = make([]int, len(a.shape)+1)
+	a.strides[len(a.shape)] = 1
+	for i := len(a.shape) - 1; i >= 0; i-- {
+		a.strides[i] = a.strides[i+1] * a.shape[i]
+	}
+
+	return a
+}
+
 func (a *Arrf) SameShapeTo(b *Arrf) bool {
 	return SameIntSlice(a.shape, b.shape)
 }
@@ -162,4 +186,11 @@ func AtLeast2D(a *Arrf) *Arrf {
 		a.shape = newShpae
 		return a
 	}
+}
+
+//
+func (a *Arrf) Flatten() *Arrf {
+	ra := make([]float64, len(a.data))
+	copy(ra, a.data)
+	return Array(ra, len(a.data))
 }

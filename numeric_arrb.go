@@ -129,7 +129,7 @@ func (a *Arrb) String() (s string) {
     return
 }
 
-func(ab *Arrb) All() bool {
+func (ab *Arrb) AllTrues() bool {
     if len(ab.data) == 0 {
         return false
     }
@@ -141,7 +141,7 @@ func(ab *Arrb) All() bool {
     return true
 }
 
-func(ab *Arrb) Any() bool {
+func (ab *Arrb) AnyTrue() bool {
     if len(ab.data) == 0 {
         return false
     }

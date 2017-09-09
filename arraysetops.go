@@ -42,7 +42,7 @@ import (
 //The number of times each of the unique values comes up in the
 //original array. Only provided if `return_counts` is True.
 func Unique(a *Arrf) *Arrf {
-    uniques := make([]float64, 0, a.Count())
+    uniques := make([]float64, 0, a.Length())
     for _, v := range a.Values() {
         if !ContainsFloat64(uniques, v) {
             uniques = append(uniques, v)

@@ -95,7 +95,7 @@ func (a *Arrf) Div(b *Arrf) *Arrf {
 
 func (a *Arrf) DotProd(b *Arrf) float64 {
 	switch {
-	case a.Ndims() == 1 && b.Ndims() == 1 && a.Count() == b.Count():
+	case a.Ndims() == 1 && b.Ndims() == 1 && a.Length() == b.Length():
 		return asm.DotProd(a.data, b.data)
 	}
 	panic(SHAPE_ERROR)
@@ -445,7 +445,7 @@ func Boardcast(a, b *Arrf) (*Arrf, *Arrf, error) {
 	if len(aChangeNum) == 0 {
 		aNew = a
 	} else {
-		var baseNum = a.Count()
+		var baseNum = a.Length()
 		var expandTimes = ProductIntSlice(aChangeNum)
 		var expandData = make([]float64, baseNum*expandTimes)
 		for i := 0; i < expandTimes; i++ {
@@ -467,7 +467,7 @@ func Boardcast(a, b *Arrf) (*Arrf, *Arrf, error) {
 	if len(bChangeNum) == 0 {
 		bNew = b
 	} else {
-		var baseNum = b.Count()
+		var baseNum = b.Length()
 		var expandTimes = ProductIntSlice(bChangeNum)
 		var expandData = make([]float64, baseNum*expandTimes)
 		for i := 0; i < expandTimes; i++ {
