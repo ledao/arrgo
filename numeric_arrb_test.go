@@ -1,6 +1,9 @@
 package arrgo
 
-import "testing"
+import (
+	"testing"
+	"strings"
+)
 
 func TestArrayBCond1(t *testing.T) {
 	arr := ArrayB(nil)
@@ -168,6 +171,31 @@ func TestArrb_AnyTrue(t *testing.T) {
 	arr = ArrayB([]bool{false, false})
 	if arr.AnyTrue() != false {
 		t.Errorf("EXepcted false, got ", arr.AnyTrue())
+	}
+}
+
+func TestArrb_String(t *testing.T) {
+	var arr *Arrb
+
+	if arr.String() != "<nil>" {
+		t.Errorf("Expected <nil>, git ", arr.String())
+	}
+
+	arr = EmptyB(2)
+	arr.shape = nil
+	if arr.String() != "<nil>" {
+		t.Errorf("Expected <nil>, git ", arr.String())
+	}
+
+	arr = EmptyB(2)
+	arr.strides = make([]int, 2)
+	if arr.String() != "[]" {
+		t.Errorf("Expected [], got ", arr.String())
+	}
+
+	arr = ArrayB([]bool{true, false}, 2, 1)
+	if strings.Replace(arr.String(), "\n", ":", -1) != "[[true] : [false]]" {
+		t.Errorf("Expected [[true]\n[false]], got ", arr.String())
 	}
 }
 

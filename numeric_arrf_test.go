@@ -1,6 +1,9 @@
 package arrgo
 
-import "testing"
+import (
+	"testing"
+	"strings"
+)
 
 func TestArrayCond1(t *testing.T) {
 	arr := Array(nil)
@@ -235,8 +238,42 @@ func TestOnes(t *testing.T) {
 	}
 }
 
+func TestOnesLike(t *testing.T) {
+	originalArr := Ones(3)
+	arr := OnesLike(originalArr)
+
+	if !SameIntSlice(arr.shape, []int{3}) {
+		t.Error("Expected [3], got ", arr.shape)
+	}
+
+	if !SameIntSlice(arr.strides, []int{3, 1}) {
+		t.Errorf("Expected [3, 1], got ", arr.strides)
+	}
+
+	if !SameFloat64Slice(arr.data, []float64{1, 1, 1}) {
+		t.Errorf("Expected [1, 1, 1], got ", arr.data)
+	}
+}
+
 func TestZeros(t *testing.T) {
 	arr := Zeros(3)
+
+	if !SameIntSlice(arr.shape, []int{3}) {
+		t.Error("Expected [3], got ", arr.shape)
+	}
+
+	if !SameIntSlice(arr.strides, []int{3, 1}) {
+		t.Errorf("Expected [3, 1], got ", arr.strides)
+	}
+
+	if !SameFloat64Slice(arr.data, []float64{0, 0, 0}) {
+		t.Errorf("Expected [0,0,0], got ", arr.data)
+	}
+}
+
+func TestZerosLike(t *testing.T) {
+	orignalArr := Zeros(3)
+	arr := ZerosLike(orignalArr)
 
 	if !SameIntSlice(arr.shape, []int{3}) {
 		t.Error("Expected [3], got ", arr.shape)
@@ -344,6 +381,23 @@ func TestArrf_Length(t *testing.T) {
 
 func TestEye(t *testing.T) {
 	arr := Eye(2)
+
+	if !arr.Equal(Array([]float64{1, 0, 0, 1}, 2, 2)).AllTrues() {
+		t.Errorf("Expected [1, 0, 0, 1], got ", arr)
+	}
+
+	defer func() {
+		r := recover()
+		if r != SHAPE_ERROR {
+			t.Errorf("Expected SHAPE_ERROR, got ", r)
+		}
+	}()
+
+	Eye(0)
+}
+
+func TestIdentity(t *testing.T) {
+	arr := Identity(2)
 
 	if !arr.Equal(Array([]float64{1, 0, 0, 1}, 2, 2)).AllTrues() {
 		t.Errorf("Expected [1, 0, 0, 1], got ", arr)
@@ -470,4 +524,33 @@ func TestArrf_TransposeException(t *testing.T) {
 		}
 	}()
 	arr.Transpose(0, 1)
+}
+
+func TestArrf_String(t *testing.T) {
+	var arr *Arrf
+	if arr.String() != "<nil>" {
+		t.Errorf("Expected <nil>, got ", arr.String())
+	}
+
+	arr = Zeros(2)
+	arr.data = nil
+	if arr.String() != "<nil>" {
+		t.Errorf("Expected <nil> got ", arr.String())
+	}
+
+	arr = Array(nil, 1)
+	arr.strides = make([]int, 2)
+	if arr.String() != "[]" {
+		t.Errorf("Expected [], got ", arr.String())
+	}
+
+	arr = Arange(2)
+	if arr.String() != "[0 1]" {
+		t.Errorf("Expected [0 1], got ", arr.String())
+	}
+
+	arr = Arange(2).Reshape(2, 1)
+	if strings.Replace(arr.String(), "\n", ":", -1) != "[[0] : [1]]" {
+		t.Errorf("Expected , got ", arr.String())
+	}
 }

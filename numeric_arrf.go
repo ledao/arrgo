@@ -213,6 +213,12 @@ func (a *Arrf) String() (s string) {
 		return "[]"
 	case len(a.shape) == 1:
 		return fmt.Sprint(a.data)
+		//strs := make([]string, len(a.data))
+		//for i := range a.data {
+		//	strs[i] = string(strconv.FormatFloat(a.data[i], 'f', -1, 64))
+		//
+		//}
+		//return strings.Join(strs, ", ")
 	}
 
 	stride := a.shape[len(a.shape)-1]
