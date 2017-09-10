@@ -195,7 +195,7 @@ func Concat(axis int, arrs ...*Arrf) *Arrf {
 	return Array(data, newShape...)
 }
 
-//将一维数组扩充位二维
+//将一维数组扩充为二维
 func AtLeast2D(a *Arrf) *Arrf {
 	if a == nil {
 		return nil
