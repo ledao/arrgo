@@ -29,44 +29,44 @@ func TestArrf_ReshapeException(t *testing.T) {
 }
 
 func TestArrf_SameShapeTo(t *testing.T) {
-	a := Arange(4).Reshape(2,2)
-	b := Array([]float64{3,4,5,6}, 2, 2)
+	a := Arange(4).Reshape(2, 2)
+	b := Array([]float64{3, 4, 5, 6}, 2, 2)
 	if a.SameShapeTo(b) != true {
-		t.Errorf("Expected true, got ", a.SameShapeTo(b))
+		t.Errorf("Expected true, got %d", a.SameShapeTo(b))
 	}
 }
 
 func TestVstack(t *testing.T) {
 	if Vstack() != nil {
-		t.Errorf("Expected nil, got ", Vstack())
+		t.Errorf("Expected nil, got %s", Vstack())
 	}
 
 	a := Arange(3)
 	stacked := Vstack(a)
 	if !stacked.Equal(Arange(3)).AllTrues() {
-		t.Errorf("Expected [0, 1, 2], got ", stacked)
+		t.Errorf("Expected [0, 1, 2], got %s", stacked)
 	}
 
-	b := Array([]float64{3,4,5})
+	b := Array([]float64{3, 4, 5})
 	stacked = Vstack(a, b)
-	if !stacked.Equal(Array([]float64{0,1,2,3,4,5}, 2, 3)).AllTrues(){
-		t.Errorf("Expected [[0 1 2] [3 4 5]], got ", stacked)
+	if !stacked.Equal(Array([]float64{0, 1, 2, 3, 4, 5}, 2, 3)).AllTrues() {
+		t.Errorf("Expected [[0 1 2] [3 4 5]], got %s", stacked)
 	}
 
 	a = Arange(2)
-	b = Arange(4).Reshape(2,2)
+	b = Arange(4).Reshape(2, 2)
 	stacked = Vstack(a, b)
-	if !stacked.Equal(Array([]float64{0,1,0,1,2,3}, 3,2)).AllTrues() {
-		t.Errorf("Expected [[0,1], [0,1], [2, 3]], got ", stacked)
+	if !stacked.Equal(Array([]float64{0, 1, 0, 1, 2, 3}, 3, 2)).AllTrues() {
+		t.Errorf("Expected [[0,1], [0,1], [2, 3]], got %s", stacked)
 	}
 }
 
 func TestVstackException(t *testing.T) {
-	a := Arange(4).Reshape(1,2,2)
+	a := Arange(4).Reshape(1, 2, 2)
 	defer func() {
 		r := recover()
 		if r != SHAPE_ERROR {
-			t.Errorf("Expected shape error, got ", r)
+			t.Errorf("Expected shape error, got %s", r)
 		}
 	}()
 
@@ -97,14 +97,14 @@ func TestHstack(t *testing.T) {
 		t.Errorf("Expected [0, 1, 2], got ", stacked)
 	}
 	a = a.Reshape(3, 1)
-	b := Array([]float64{3,4,5}).Reshape(3, 1)
+	b := Array([]float64{3, 4, 5}).Reshape(3, 1)
 	stacked = Hstack(a, b)
-	if !stacked.Equal(Array([]float64{0,3,1,4,2,5}, 3, 2)).AllTrues(){
+	if !stacked.Equal(Array([]float64{0, 3, 1, 4, 2, 5}, 3, 2)).AllTrues() {
 		t.Errorf("Expected [[0 3] [1 4], [2 5]], got ", stacked)
 	}
 
 	a = Arange(2).Reshape(2, 1)
-	b = Arange(4).Reshape(2,2)
+	b = Arange(4).Reshape(2, 2)
 	stacked = Hstack(a, b)
 	if !stacked.Equal(Array([]float64{0, 0, 1, 1, 2, 3}, 2, 3)).AllTrues() {
 		t.Errorf("Expected [[0, 0, 1], [1, 2, 3]], got ", stacked)
@@ -112,7 +112,7 @@ func TestHstack(t *testing.T) {
 }
 
 func TestHstackException(t *testing.T) {
-	a := Arange(4).Reshape(1,2,2)
+	a := Arange(4).Reshape(1, 2, 2)
 	defer func() {
 		r := recover()
 		if r != SHAPE_ERROR {
@@ -136,8 +136,6 @@ func TestHstackException2(t *testing.T) {
 	Hstack(a, b)
 }
 
-
-
 func TestConcat(t *testing.T) {
 	if Concat(0) != nil {
 		t.Errorf("Expected nil, got ", Concat(0))
@@ -151,7 +149,7 @@ func TestConcat(t *testing.T) {
 	b := Arange(1, 4)
 
 	concated = Concat(0, a, b)
-	if !concated.Equal(Array([]float64{0,1,2, 1,2,3}, 2, 3)).AllTrues() {
+	if !concated.Equal(Array([]float64{0, 1, 2, 1, 2, 3}, 2, 3)).AllTrues() {
 		t.Errorf("Expected [[0,1,2], [1,2,3]], got ", concated)
 	}
 
@@ -160,7 +158,7 @@ func TestConcat(t *testing.T) {
 
 	concated = Concat(1, a, b)
 	t.Log(concated)
-	if !concated.Equal(Array([]float64{0,1,2,1,2,3}, 1,6)).AllTrues() {
+	if !concated.Equal(Array([]float64{0, 1, 2, 1, 2, 3}, 1, 6)).AllTrues() {
 		t.Errorf("Expected [[0,1,2,1,2,3]], got ", concated)
 	}
 
