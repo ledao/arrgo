@@ -1,8 +1,8 @@
 package arrgo
 
 import (
-	"testing"
 	"strings"
+	"testing"
 )
 
 func TestArrayBCond1(t *testing.T) {
@@ -114,15 +114,15 @@ func TestFillB(t *testing.T) {
 	arr := FillB(true, 3)
 
 	if !SameIntSlice(arr.shape, []int{3}) {
-		t.Errorf("Expected [3], got ", arr.shape)
+		t.Errorf("Expected [3], got %v", arr.shape)
 	}
 
 	if !SameIntSlice(arr.strides, []int{3, 1}) {
-		t.Errorf("Expected [3, 1], got ", arr.strides)
+		t.Errorf("Expected [3, 1], got %v", arr.strides)
 	}
 
 	if !SameBoolSlice(arr.data, []bool{true, true, true}) {
-		t.Errorf("Expected [true, true, true], got ", arr.data)
+		t.Errorf("Expected [true, true, true], got %v", arr.data)
 	}
 }
 
@@ -131,7 +131,7 @@ func TestFillBException(t *testing.T) {
 		r := recover()
 
 		if r != SHAPE_ERROR {
-			t.Errorf("Expected SHAPE_ERROR, got ", r)
+			t.Errorf("Expected SHAPE_ERROR, got %v", r)
 		}
 	}()
 
@@ -141,36 +141,36 @@ func TestFillBException(t *testing.T) {
 func TestEmptyB(t *testing.T) {
 	arr := EmptyB(3)
 	if !SameBoolSlice(arr.data, []bool{false, false, false}) {
-		t.Errorf("Expected [false, false, false], got ", arr.data)
+		t.Errorf("Expected [false, false, false], got %v", arr.data)
 	}
 }
 
 func TestArrb_AllTrues(t *testing.T) {
 	arr := ArrayB([]bool{true, true})
 	if arr.AllTrues() != true {
-		t.Errorf("Expected true, got ", arr.AllTrues())
+		t.Errorf("Expected true, got %t", arr.AllTrues())
 	}
 
 	arr = ArrayB([]bool{true, false})
 	if arr.AllTrues() != false {
-		t.Errorf("EXepcted false, got ", arr.AllTrues())
+		t.Errorf("EXepcted false, got %t", arr.AllTrues())
 	}
 }
 
 func TestArrb_AnyTrue(t *testing.T) {
 	arr := ArrayB([]bool{true, true})
 	if arr.AnyTrue() != true {
-		t.Errorf("Expected true, got ", arr.AnyTrue())
+		t.Errorf("Expected true, got %t", arr.AnyTrue())
 	}
 
 	arr = ArrayB([]bool{true, false})
 	if arr.AnyTrue() != true {
-		t.Errorf("EXepcted true, got ", arr.AnyTrue())
+		t.Errorf("EXepcted true, got %t", arr.AnyTrue())
 	}
 
 	arr = ArrayB([]bool{false, false})
 	if arr.AnyTrue() != false {
-		t.Errorf("EXepcted false, got ", arr.AnyTrue())
+		t.Errorf("EXepcted false, got %t", arr.AnyTrue())
 	}
 }
 
@@ -178,40 +178,40 @@ func TestArrb_String(t *testing.T) {
 	var arr *Arrb
 
 	if arr.String() != "<nil>" {
-		t.Errorf("Expected <nil>, git ", arr.String())
+		t.Errorf("Expected <nil>, git %s", arr.String())
 	}
 
 	arr = EmptyB(2)
 	arr.shape = nil
 	if arr.String() != "<nil>" {
-		t.Errorf("Expected <nil>, git ", arr.String())
+		t.Errorf("Expected <nil>, git %s", arr.String())
 	}
 
 	arr = EmptyB(2)
 	arr.strides = make([]int, 2)
 	if arr.String() != "[]" {
-		t.Errorf("Expected [], got ", arr.String())
+		t.Errorf("Expected [], got %s", arr.String())
 	}
 
 	arr = ArrayB([]bool{true, false}, 2, 1)
 	if strings.Replace(arr.String(), "\n", ":", -1) != "[[true] : [false]]" {
-		t.Errorf("Expected [[true]\n[false]], got ", arr.String())
+		t.Errorf("Expected [[true]\n[false]], got %s", arr.String())
 	}
 }
 
 func TestArrb_Sum(t *testing.T) {
 	arr := ArrayB([]bool{true, true})
 	if arr.Sum() != 2 {
-		t.Errorf("Expected 2, got ", arr.Sum())
+		t.Errorf("Expected 2, got %d", arr.Sum())
 	}
 
 	arr = ArrayB([]bool{true, false})
 	if arr.Sum() != 1 {
-		t.Errorf("Expected 1, got ", arr.Sum())
+		t.Errorf("Expected 1, got %d", arr.Sum())
 	}
 
 	arr = ArrayB([]bool{false, false})
 	if arr.Sum() != 0 {
-		t.Errorf("Expected 0, got ", arr.Sum())
+		t.Errorf("Expected 0, got %d", arr.Sum())
 	}
 }

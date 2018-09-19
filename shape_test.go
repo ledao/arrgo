@@ -7,13 +7,13 @@ func TestArrf_Reshape(t *testing.T) {
 	arr2 := arr.Reshape(3, 2)
 
 	if !SameIntSlice(arr.strides, []int{6, 2, 1}) {
-		t.Errorf("Expected [6,2,1], got ", arr2.strides)
+		t.Error("Expected [6,2,1], got ", arr2.strides)
 	}
 	if !SameIntSlice(arr.shape, []int{3, 2}) {
-		t.Errorf("Expected [3, 2], got ", arr.shape)
+		t.Error("Expected [3, 2], got ", arr.shape)
 	}
 	if !SameIntSlice(arr2.shape, []int{3, 2}) {
-		t.Errorf("Expected [3, 2], got ", arr2.shape)
+		t.Error("Expected [3, 2], got ", arr2.shape)
 	}
 }
 
@@ -21,7 +21,7 @@ func TestArrf_ReshapeException(t *testing.T) {
 	defer func() {
 		r := recover()
 		if r != SHAPE_ERROR {
-			t.Errorf("Expected shape error, got ", r)
+			t.Error("Expected shape error, got ", r)
 		}
 	}()
 
@@ -32,7 +32,7 @@ func TestArrf_SameShapeTo(t *testing.T) {
 	a := Arange(4).Reshape(2, 2)
 	b := Array([]float64{3, 4, 5, 6}, 2, 2)
 	if a.SameShapeTo(b) != true {
-		t.Errorf("Expected true, got %d", a.SameShapeTo(b))
+		t.Errorf("Expected true, got %t", a.SameShapeTo(b))
 	}
 }
 
@@ -79,7 +79,7 @@ func TestVstackException2(t *testing.T) {
 	defer func() {
 		r := recover()
 		if r != SHAPE_ERROR {
-			t.Errorf("Expected shape error, got ", r)
+			t.Error("Expected shape error, got ", r)
 		}
 	}()
 
@@ -88,26 +88,26 @@ func TestVstackException2(t *testing.T) {
 
 func TestHstack(t *testing.T) {
 	if Hstack() != nil {
-		t.Errorf("Expected nil, got ", Hstack())
+		t.Error("Expected nil, got ", Hstack())
 	}
 
 	a := Arange(3)
 	stacked := Hstack(a)
 	if !stacked.Equal(Arange(3)).AllTrues() {
-		t.Errorf("Expected [0, 1, 2], got ", stacked)
+		t.Error("Expected [0, 1, 2], got ", stacked)
 	}
 	a = a.Reshape(3, 1)
 	b := Array([]float64{3, 4, 5}).Reshape(3, 1)
 	stacked = Hstack(a, b)
 	if !stacked.Equal(Array([]float64{0, 3, 1, 4, 2, 5}, 3, 2)).AllTrues() {
-		t.Errorf("Expected [[0 3] [1 4], [2 5]], got ", stacked)
+		t.Error("Expected [[0 3] [1 4], [2 5]], got ", stacked)
 	}
 
 	a = Arange(2).Reshape(2, 1)
 	b = Arange(4).Reshape(2, 2)
 	stacked = Hstack(a, b)
 	if !stacked.Equal(Array([]float64{0, 0, 1, 1, 2, 3}, 2, 3)).AllTrues() {
-		t.Errorf("Expected [[0, 0, 1], [1, 2, 3]], got ", stacked)
+		t.Error("Expected [[0, 0, 1], [1, 2, 3]], got ", stacked)
 	}
 }
 
@@ -116,7 +116,7 @@ func TestHstackException(t *testing.T) {
 	defer func() {
 		r := recover()
 		if r != SHAPE_ERROR {
-			t.Errorf("Expected shape error, got ", r)
+			t.Error("Expected shape error, got ", r)
 		}
 	}()
 
@@ -129,7 +129,7 @@ func TestHstackException2(t *testing.T) {
 	defer func() {
 		r := recover()
 		if r != SHAPE_ERROR {
-			t.Errorf("Expected shape error, got ", r)
+			t.Error("Expected shape error, got ", r)
 		}
 	}()
 
@@ -138,11 +138,11 @@ func TestHstackException2(t *testing.T) {
 
 func TestConcat(t *testing.T) {
 	if Concat(0) != nil {
-		t.Errorf("Expected nil, got ", Concat(0))
+		t.Error("Expected nil, got ", Concat(0))
 	}
 	concated := Concat(0, Arange(2))
 	if !concated.Equal(Arange(2)).AllTrues() {
-		t.Errorf("Expected [0, 1], got ", concated)
+		t.Error("Expected [0, 1], got ", concated)
 	}
 
 	a := Arange(3)
@@ -150,7 +150,7 @@ func TestConcat(t *testing.T) {
 
 	concated = Concat(0, a, b)
 	if !concated.Equal(Array([]float64{0, 1, 2, 1, 2, 3}, 2, 3)).AllTrues() {
-		t.Errorf("Expected [[0,1,2], [1,2,3]], got ", concated)
+		t.Error("Expected [[0,1,2], [1,2,3]], got ", concated)
 	}
 
 	a = Arange(3)
@@ -159,7 +159,7 @@ func TestConcat(t *testing.T) {
 	concated = Concat(1, a, b)
 	t.Log(concated)
 	if !concated.Equal(Array([]float64{0, 1, 2, 1, 2, 3}, 1, 6)).AllTrues() {
-		t.Errorf("Expected [[0,1,2,1,2,3]], got ", concated)
+		t.Error("Expected [[0,1,2,1,2,3]], got ", concated)
 	}
 
 }
@@ -171,7 +171,7 @@ func TestConcatException(t *testing.T) {
 	defer func() {
 		r := recover()
 		if r != SHAPE_ERROR {
-			t.Errorf("Expected shape error, got ", r)
+			t.Error("Expected shape error, got ", r)
 		}
 	}()
 
@@ -185,7 +185,7 @@ func TestConcatException2(t *testing.T) {
 	defer func() {
 		r := recover()
 		if r != PARAMETER_ERROR {
-			t.Errorf("Expected PARAMETER_ERROR, got ", r)
+			t.Error("Expected PARAMETER_ERROR, got ", r)
 		}
 	}()
 
@@ -212,21 +212,21 @@ func TestAtLeast2D(t *testing.T) {
 
 func TestAtLeast2D2(t *testing.T) {
 	if AtLeast2D(nil) != nil {
-		t.Errorf("Expected nil, got ", AtLeast2D(nil))
+		t.Error("Expected nil, got ", AtLeast2D(nil))
 	}
 
 	arr := Arange(3)
 	AtLeast2D(arr)
 
 	if !SameIntSlice(arr.shape, []int{1, 3}) {
-		t.Errorf("expected true, got false")
+		t.Error("expected true, got false")
 	}
 
 	arr = Arange(3).Reshape(3, 1)
 	AtLeast2D(arr)
 
 	if !SameIntSlice(arr.shape, []int{3, 1}) {
-		t.Errorf("expected true, got false")
+		t.Error("expected true, got false")
 	}
 }
 
@@ -235,6 +235,6 @@ func TestArrf_Flatten(t *testing.T) {
 	flattened := arr.Flatten()
 
 	if !flattened.SameShapeTo(Arange(3)) {
-		t.Errorf("expected [3], got ", flattened.shape)
+		t.Error("expected [3], got ", flattened.shape)
 	}
 }
