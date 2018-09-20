@@ -29,6 +29,6 @@ func SliceToCArrayFloat64(slice []float64) (*C.double, C.int) {
 
 func Go_cblas_ddot(n int64, x []float64, incx int64, y []float64, incy int64) float64 {
 	cx, lx := SliceToCArrayFloat64(x)
-	C.printArray(cx, lx)
-	return 0.0
+	cy, ly := SliceToCArrayFloat64(y)
+	return float64(C.cblas_ddot(lx, cx, C.int(incx), ly, cy, C.int(incy)))
 }
