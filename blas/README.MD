@@ -3,7 +3,9 @@
 
 ## 完成情况
 #### level1
-未开始
+cblas_ddot done
+cblas_daxpy doing
+
 
 #### level2
 未开始
