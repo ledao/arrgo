@@ -5,6 +5,8 @@
 #### level1
 cblas_ddot done
 cblas_daxpy doing
+cblas_dcopy doing
+cblas_dasum doing
 
 
 #### level2
