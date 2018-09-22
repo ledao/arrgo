@@ -18,5 +18,5 @@ func Go_cblas_dgbmv(order CBLAS_ORDER, trans CBLAS_TRANSPOSE, m int64, n int64, 
 	ca, _ := SliceToCArrayFloat64(a)
 	cx, _ := SliceToCArrayFloat64(x)
 	cy, _ := SliceToCArrayFloat64(y)
-	C.cblas_dgbmv(C.int(order), C.int(trans), C.int(m), C.int(n), C.int(kl), C.int(ku), C.double(alpha), ca, C.int(lad), cx, C.int(incx), cy, C.int(incy))
+	C.cblas_dgbmv(C.enum_CBLAS_ORDER(order), C.enum_CBLAS_TRANSPOSE(trans), C.int(m), C.int(n), C.int(kl), C.int(ku), C.double(alpha), ca, C.int(lad), cx, C.int(incx), C.double(beta), cy, C.int(incy))
 }

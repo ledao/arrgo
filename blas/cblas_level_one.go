@@ -86,5 +86,5 @@ func Go_cblas_idamax(n int64, x []float64, incx int64) int64 {
 // ref: https://software.intel.com/en-us/mkl-developer-reference-c-cblas-i-amin
 func Go_cblas_idamin(n int64, x []float64, incx int64) int64 {
 	cx, _ := SliceToCArrayFloat64(x)
-	return C.cblas_idamin(C.int(n), cx, C.int(incx))
+	return int64(C.cblas_idamin(C.int(n), cx, C.int(incx)))
 }
