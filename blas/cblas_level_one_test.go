@@ -1,6 +1,7 @@
 package blas
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -9,7 +10,11 @@ func Test_cblas_dasum(t *testing.T) {
 	var x []float64 = []float64{3, 4, 5}
 	var incx int64 = 1
 	res := Go_cblas_dasum(n, x, incx)
-	t.Log(res)
+	fmt.Println(res)
+
+	if res != 12 {
+		t.Error("expected 12, got ", res)
+	}
 }
 
 func Test_cblas_ddot(t *testing.T) {
@@ -19,8 +24,12 @@ func Test_cblas_ddot(t *testing.T) {
 	}
 }
 
-func Benchmark_cblas_ddot_bench(b *testing.B) {
-	for i := 0; i < 100; i++ {
-		Go_cblas_ddot(3, []float64{1, 2, 3}, 1, []float64{2, 3, 4}, 1)
-	}
+// func Benchmark_cblas_ddot_bench(b *testing.B) {
+// 	for i := 0; i < 100; i++ {
+// 		Go_cblas_ddot(3, []float64{1, 2, 3}, 1, []float64{2, 3, 4}, 1)
+// 	}
+// }
+
+func Test_cblas_daxpy(t *testing.T) {
+
 }
