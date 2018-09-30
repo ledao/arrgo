@@ -31,5 +31,14 @@ func Test_cblas_ddot(t *testing.T) {
 // }
 
 func Test_cblas_daxpy(t *testing.T) {
-
+	var n int64 = 3
+	var a float64 = 2.0
+	var x = []float64{1, 2, 3}
+	var incx int64 = 1
+	var y = []float64{1, 2, 3}
+	var incy int64 = 1
+	Go_cblas_daxpy(n, a, x, incx, y, incy)
+	if len(y) != 3 || y[0] != 3.0 || y[1] != 6.0 || y[2] != 9.0 {
+		t.Error("expected [3, 6, 9], got ", y)
+	}
 }
