@@ -11,7 +11,7 @@ package blas
 
 */
 import "C"
-import "fmt"
+// import "fmt"
 
 // y := alpha*A*x + beta*y, or y := alpha*A'*x + beta*y,
 // ref: https://software.intel.com/en-us/mkl-developer-reference-c-cblas-gbmv
@@ -29,5 +29,5 @@ func Go_cblas_dgbmv(
 	cx, _ := SliceToCArrayFloat64(x)
 	cy, _ := SliceToCArrayFloat64(y)
 	C.cblas_dgbmv(C.enum_CBLAS_ORDER(order), C.enum_CBLAS_TRANSPOSE(trans), C.int(m), C.int(n), C.int(kl), C.int(ku), C.double(alpha), ca, C.int(lda), cx, C.int(incx), C.double(beta), cy, C.int(incy))
-	fmt.Println(y)
+	// fmt.Println(y)
 }
