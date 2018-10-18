@@ -56,3 +56,30 @@ func Test_Go_cblas_dcopy(t *testing.T) {
 		t.Error("expected 2, got ", y[0])
 	}
 }
+
+func Test_Go_cblas_dnrm2(t *testing.T) {
+	var n int64 = 3
+	var x = []float64{2,3,4}
+	var incx int64 = 1
+	var norm = Go_cblas_dnrm2(n, x, incx)
+	if norm != 5.385164807134504 {
+		t.Error("expected 5.385164807134504, got ", norm)
+	}
+}
+
+func Test_Go_cblas_drot(t *testing.T) {
+	var n int64 = 3
+	var x = []float64{2,3,4}
+	var incx int64 = 1
+	var y = []float64{2,3,4}
+	var incy int64 = 1
+	var c float64 = 2.0
+	var s float64 = 3.0
+	Go_cblas_drot(n, x, incx, y, incy, c ,s )
+	if x[0] != 10 || x[1] != 15 || x[2] != 20 {
+		t.Error("expected [10, 15, 20], got ", x)
+	}
+	if y[0] != -2 || y[1] != -3 || y[2] != -4 {
+		t.Error("Expected [-2, -3, -4], got ", y)
+	}
+}
