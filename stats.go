@@ -3,7 +3,7 @@ package arrgo
 import (
 	"sort"
 
-	"github.com/ledao/arrgo/internal"
+	asm "arrgo/internal"
 )
 
 func (a *Arrf) Sum(axis ...int) *Arrf {
@@ -53,7 +53,7 @@ axisR:
 		}
 		//如果不是最后一个轴，则在该轴上进行规约
 		for w := 0; w < ln; w += wd {
-			t := ta.data[w/wd*st: (w/wd+1)*st]
+			t := ta.data[w/wd*st : (w/wd+1)*st]
 			copy(t, ta.data[w:w+st])
 			for i := 1; i*st+1 < wd; i++ {
 				asm.Vadd(t, ta.data[w+(i)*st:w+(i+1)*st])
@@ -180,7 +180,7 @@ axisR:
 		}
 		//如果不是最后一个轴，则在该轴上进行规约
 		for w := 0; w < ln; w += wd {
-			t := ta.data[w/wd*st: (w/wd+1)*st]
+			t := ta.data[w/wd*st : (w/wd+1)*st]
 			copy(t, ta.data[w:w+st])
 			for i := 1; i*st+1 < wd; i++ {
 				Vmin(t, ta.data[w+(i)*st:w+(i+1)*st])
@@ -251,7 +251,7 @@ axisR:
 		}
 		//如果不是最后一个轴，则在该轴上进行规约
 		for w := 0; w < ln; w += wd {
-			t := ta.data[w/wd*st: (w/wd+1)*st]
+			t := ta.data[w/wd*st : (w/wd+1)*st]
 			copy(t, ta.data[w:w+st])
 			for i := 1; i*st+1 < wd; i++ {
 				Vmax(t, ta.data[w+(i)*st:w+(i+1)*st])
@@ -304,12 +304,11 @@ func (a *Arrf) ArgMax(axis int) *Arrf {
 		td := make([]float64, 0, ln/wd)
 		for w := 0; w < ln; w += wd {
 			Vargmax(st, ta.data[w:w+wd])
-			td = append(td, ta.data[w:w+wd][:st]...)
+			td = append(td, ta.data[w : w+wd][:st]...)
 		}
 		ln /= v
 		ta.data = td
 	}
-
 
 	ta.shape = restAxis
 
@@ -355,12 +354,11 @@ func (a *Arrf) ArgMin(axis int) *Arrf {
 		td := make([]float64, 0, ln/wd)
 		for w := 0; w < ln; w += wd {
 			Vargmin(st, ta.data[w:w+wd])
-			td = append(td, ta.data[w:w+wd][:st]...)
+			td = append(td, ta.data[w : w+wd][:st]...)
 		}
 		ln /= v
 		ta.data = td
 	}
-
 
 	ta.shape = restAxis
 

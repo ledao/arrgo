@@ -1,6 +1,7 @@
 package arrgo
 
 import (
+	"fmt"
 	"math"
 	"sort"
 )
@@ -18,6 +19,20 @@ func ReverseIntSlice(slice []int) []int {
 func ProductIntSlice(slice []int) int {
 	var prod = 1
 	for _, v := range slice {
+		prod *= v
+	}
+	return prod
+}
+
+func GetShapeNum(shape []int64) int64 {
+	if len(shape) == 0 {
+		panic(fmt.Errorf("shape为空，无法计算数据个数。"))
+	}
+	var prod int64 = 1
+	for _, v := range shape {
+		if v <= 0 {
+			panic(fmt.Errorf("shape值必须为正数"))
+		}
 		prod *= v
 	}
 	return prod

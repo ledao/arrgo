@@ -3,7 +3,7 @@ package arrgo
 import (
 	"math"
 	//"arrgo/internal"
-	"github.com/ledao/arrgo/internal"
+	asm "arrgo/internal"
 )
 
 //多维数组和标量相加，结果为新的多维数组，不修改原数组。
