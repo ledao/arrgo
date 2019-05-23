@@ -1,7 +1,7 @@
 package arrgo
 
 type Tensor struct {
-	shape   []int64
-	strides []int64
+	shape   []int
+	strides []int
 	data    []float64
 }

@@ -2,6 +2,33 @@ package arrgo
 
 import "fmt"
 
+//ReShape 改变Tensor的形状，改变形状后的t将会返回。
+//t本身的数据没有改动。
+func (t *Tensor) ReShape(nShape ...int) *Tensor {
+	if len(t.data) != GetShapeNum(nShape) {
+		panic(SHAPE_ERROR)
+	}
+
+	tShape := make([]int, len(nShape))
+	copy(tShape, nShape)
+	t.shape = tShape
+	t.strides = make([]int, len(t.shape)+1)
+	for i := len(at.shape) - 1; i >= 0; i-- {
+		t.strides[i] = t.strides[i+1] * t.shape[i]
+	}
+	return t
+}
+
+//Size tensor内部元素个数
+func (t *Tensor) Size() int {
+	return int(len(t.data))
+}
+
+//Numel tensor内部元素个数
+func (t *Tensor) Numel() int {
+	return t.Size()
+}
+
 //改变原始多维数组的形状，并返回改变后的多维数组的指引引用。
 //不会创建新的数据副本。
 //如果新的shape的大小和原来多维数组的大小不同，则抛出异常。
