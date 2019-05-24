@@ -33,6 +33,12 @@ func Empty(shape ...int) *Tensor {
 	}
 }
 
+//EmptyLike 根据input Tensor的形状创建空Tensor.
+//创建的tensor内部数据没有初始化。
+func EmptyLike(input *Tensor) *Tensor {
+	return Empty(input.shape...)
+}
+
 //Ones 根据指定形状创建内部数据泉为1.0的tensor.
 func Ones(shape ...int) *Tensor {
 	tenser := Empty(shape...)
@@ -76,6 +82,16 @@ func Fill(value float64, shape ...int) *Tensor {
 		tTensor.data[i] = value
 	}
 	return tTensor
+}
+
+//Full 根据指定形状创建内部数据泉为value的tensor.
+func Full(fillValue float64, shape ...int) *Tensor {
+	return Fill(fillValue, shape...)
+}
+
+//FullLike 根据input Tensor的形状创建内部数据泉为value的tensor.
+func FullLike(fillValue float64, input *Tensor) *Tensor {
+	return Fill(fillValue, input.shape...)
 }
 
 //NewTensor 根据data和shape创建tensor.
@@ -165,4 +181,32 @@ func Linspace(start, stop float64, num int) *Tensor {
 		}
 		return NewTensor(data, num)
 	}
+}
+
+//Logspace 根据[10^start, 10^stop]指定的区间，创建包含num个元素的一维数组。
+func Logspace(start, stop float64, num int) *Tensor {
+	var data = make([]float64, num)
+	var startF, stopF = start, stop
+	if startF <= stopF {
+		var step = (stopF - startF) / (float64(num - 1.0))
+		for i := range data {
+			data[i] = startF + float64(i)*step
+		}
+		return NewTensor(data, num)
+	} else {
+		var step = (startF - stopF) / (float64(num - 1.0))
+		for i := range data {
+			data[i] = math.Pow(10, startF-float64(i)*step)
+		}
+		return NewTensor(data, num)
+	}
+}
+
+//Eye 返回2维Tensor，对角线为1.0，其余为0.0。
+func Eye(n int) *Tensor {
+	tensor := Zeros(n, n)
+	for i := 0; i < n; i++ {
+		tensor.data[i*(1+n)] = 1.0
+	}
+	return tensor
 }
