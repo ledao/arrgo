@@ -57,5 +57,9 @@ func Cat(dim int, arrs ...*Arrf) *Arrf {
 }
 
 func Chunk(tensor *Tensor, chunks int, dim int) []*Tensor {
+	if tensor == nil {
+		fmt.Println("tensor is nil, Chunk fails.")
+		panic(NilTensorErr)
+	}
 
 }
