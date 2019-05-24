@@ -5,7 +5,7 @@ import "fmt"
 //ReShape 改变Tensor的形状，改变形状后的t将会返回。
 //t本身的数据没有改动。
 func (t *Tensor) ReShape(nShape ...int) *Tensor {
-	if len(t.data) != GetShapeNum(nShape) {
+	if len(t.data) != GetShapeSize(nShape) {
 		panic(SHAPE_ERROR)
 	}
 
@@ -17,38 +17,6 @@ func (t *Tensor) ReShape(nShape ...int) *Tensor {
 		t.strides[i] = t.strides[i+1] * t.shape[i]
 	}
 	return t
-}
-
-//Size tensor内部元素个数
-func (t *Tensor) Size() int {
-	return int(len(t.data))
-}
-
-//Numel tensor内部元素个数
-func (t *Tensor) Numel() int {
-	return t.Size()
-}
-
-//改变原始多维数组的形状，并返回改变后的多维数组的指引引用。
-//不会创建新的数据副本。
-//如果新的shape的大小和原来多维数组的大小不同，则抛出异常。
-func (a *Arrf) Reshape(shape ...int) *Arrf {
-	if a.Length() != ProductIntSlice(shape) {
-		fmt.Println("new shape length does not equal to original array length.")
-		panic(SHAPE_ERROR)
-	}
-
-	internalShape := make([]int, len(shape))
-	copy(internalShape, shape)
-	a.shape = internalShape
-
-	a.strides = make([]int, len(a.shape)+1)
-	a.strides[len(a.shape)] = 1
-	for i := len(a.shape) - 1; i >= 0; i-- {
-		a.strides[i] = a.strides[i+1] * a.shape[i]
-	}
-
-	return a
 }
 
 //两个多维数组形状相同，则返回true， 否则返回false。
@@ -163,63 +131,6 @@ func Hstack(arrs ...*Arrf) *Arrf {
 	//}
 	//
 	//return Array(data, vlen, hlenSum)
-}
-
-//将多个多维数组在指定的轴上组合起来。
-//一维数组默认扩充为2维，参考AtLeast2D函数。
-func Concat(axis int, arrs ...*Arrf) *Arrf {
-	if len(arrs) == 0 {
-		return nil
-	}
-	if len(arrs) == 1 {
-		return arrs[0].Copy()
-	}
-
-	for i := range arrs {
-		AtLeast2D(arrs[i])
-	}
-
-	if axis >= arrs[0].Ndims() {
-		fmt.Println("axis is bigger than dimensions num.")
-		panic(PARAMETER_ERROR)
-	}
-
-	var newShape = make([]int, arrs[0].Ndims())
-	for index, firstL := range arrs[0].shape {
-		if index == axis {
-			newShape[index] += firstL
-			for j := 1; j < len(arrs); j++ {
-				newShape[index] += arrs[j].shape[index]
-			}
-		} else {
-			newShape[index] = firstL
-			for j := 1; j < len(arrs); j++ {
-				if firstL != arrs[j].shape[index] {
-					panic(SHAPE_ERROR)
-				}
-			}
-		}
-	}
-
-	var times = 0
-	if axis == 0 {
-		times = 1
-	} else {
-		times = ProductIntSlice(arrs[0].shape[0:axis])
-	}
-
-	var data = make([]float64, ProductIntSlice(newShape))
-
-	var curPos = 0
-	for i := 0; i < times; i++ {
-		for j := 0; j < len(arrs); j++ {
-			var l = ProductIntSlice(arrs[j].shape[axis:])
-			copy(data[curPos:curPos+l], arrs[j].data[i*l:(i+1)*l])
-			curPos += l
-		}
-	}
-
-	return Array(data, newShape...)
 }
 
 //将一维数组扩充为二维

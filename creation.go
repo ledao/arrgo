@@ -17,7 +17,7 @@ func Empty(shape ...int) *Tensor {
 		}
 	}
 
-	var dNum = GetShapeNum(shape)
+	var dNum = GetShapeSize(shape)
 	var tShape = make([]int, len(shape))
 	copy(tShape, shape)
 	strides := make([]int, len(tShape)+1)
@@ -100,7 +100,7 @@ func NewTensor(data []float64, shape ...int) *Tensor {
 	if len(data) == 0 {
 		return Empty()
 	}
-	if int(len(data)) != GetShapeNum(shape) {
+	if int(len(data)) != GetShapeSize(shape) {
 		panic(SHAPE_ERROR)
 	}
 
@@ -209,4 +209,17 @@ func Eye(n int) *Tensor {
 		tensor.data[i*(1+n)] = 1.0
 	}
 	return tensor
+}
+
+//Copy 复制Tensor
+func Copy(input *Tensor) *Tensor {
+	nShape := make([]int, len(input.shape))
+	copy(nShape, input.shape)
+	nData := make([]float64, len(input.data))
+	copy(nData, input.data)
+	return NewTensor(nData, nShape...)
+}
+
+func (t *Tensor) Copy() *Tensor {
+	return Copy(t)
 }

@@ -24,7 +24,7 @@ func ProductIntSlice(slice []int) int {
 	return prod
 }
 
-func GetShapeNum(shape []int) int {
+func GetShapeSize(shape []int) int {
 	if len(shape) == 0 {
 		panic(fmt.Errorf("shape为空，无法计算数据个数。"))
 	}
