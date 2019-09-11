@@ -82,17 +82,39 @@ func TestArgMax(t *testing.T) {
 		[0, 1, 1, 0]], got `, arr.ArgMax(0))
 	}
 
+	if arr.ArgMax(-3).NotEqual(Array([]float64{0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0}, 3, 4)).AnyTrue() {
+		t.Error(`Expected
+		[[0, 0, 0, 1],
+		[0, 1, 1, 1],
+		[0, 1, 1, 0]], got `, arr.ArgMax(0))
+	}
+
+
 	if arr.ArgMax(1).NotEqual(Array([]float64{2, 0, 0, 2, 2, 1, 2, 2}, 2, 4)).AnyTrue() {
 		t.Error(`Expected
 		[[2, 0, 0, 2],
        		[2, 1, 2, 2]], got `, arr.ArgMax(1))
 	}
 
+	if arr.ArgMax(-2).NotEqual(Array([]float64{2, 0, 0, 2, 2, 1, 2, 2}, 2, 4)).AnyTrue() {
+		t.Error(`Expected
+		[[2, 0, 0, 2],
+       		[2, 1, 2, 2]], got `, arr.ArgMax(1))
+	}
+
+
 	if arr.ArgMax(2).NotEqual(Array([]float64{2, 2, 0, 3, 2, 2}, 2, 3)).AnyTrue() {
 		t.Error(`Expected
 		[[2, 2, 0],
        		[3, 2, 2]], got `, arr.ArgMax(2))
 	}
+
+	if arr.ArgMax(-1).NotEqual(Array([]float64{2, 2, 0, 3, 2, 2}, 2, 3)).AnyTrue() {
+		t.Error(`Expected
+		[[2, 2, 0],
+       		[3, 2, 2]], got `, arr.ArgMax(2))
+	}
+
 }
 
 func TestArgMin(t *testing.T) {
@@ -113,6 +135,25 @@ func TestArgMin(t *testing.T) {
 	}
 
 	if arr.ArgMin(2).NotEqual(Array([]float64{3, 0, 1, 2, 0, 0}, 2, 3)).AnyTrue() {
+		t.Error(`Expected
+		[[3, 0, 1],
+       		[2, 0, 0]], got `, arr.ArgMin(2))
+	}
+
+	if arr.ArgMin(-3).NotEqual(Array([]float64{1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1}, 3, 4)).AnyTrue() {
+		t.Error(`Expected
+		[[1, 1, 1, 0],
+		[1, 0, 0, 0],
+		[1, 0, 0, 1]], got `, arr.ArgMin(0))
+	}
+
+	if arr.ArgMin(-2).NotEqual(Array([]float64{1, 2, 2, 0, 1, 0, 0, 1}, 2, 4)).AnyTrue() {
+		t.Error(`Expected
+		[[1, 2, 2, 0],
+       		[1, 0, 0, 1]], got `, arr.ArgMin(1))
+	}
+
+	if arr.ArgMin(-1).NotEqual(Array([]float64{3, 0, 1, 2, 0, 0}, 2, 3)).AnyTrue() {
 		t.Error(`Expected
 		[[3, 0, 1],
        		[2, 0, 0]], got `, arr.ArgMin(2))

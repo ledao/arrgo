@@ -278,6 +278,9 @@ func Max(a *Arrf, axis ...int) *Arrf {
 }
 
 func (a *Arrf) ArgMax(axis int) *Arrf {
+	if axis < 0 {
+		axis = axis + len(a.shape)
+	}
 	restAxis := make([]int, len(a.shape)-1)
 	ta := a.Copy()
 	for i, t := 0, 0; i < len(ta.shape); i++ {
@@ -329,6 +332,9 @@ func ArgMax(a *Arrf, axis int) *Arrf {
 
 //fixme has bug
 func (a *Arrf) ArgMin(axis int) *Arrf {
+	if axis < 0 {
+		axis = axis + len(a.shape)
+	}
 	restAxis := make([]int, len(a.shape)-1)
 	ta := a.Copy()
 	for i, t := 0, 0; i < len(ta.shape); i++ {
