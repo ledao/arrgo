@@ -2,8 +2,8 @@ package arrgo
 
 import (
 	"sort"
-
-	"github.com/ledao/arrgo/internal"
+	"arrgo/internal"
+	//"github.com/ledao/arrgo/internal"
 )
 
 func (a *Arrf) Sum(axis ...int) *Arrf {
